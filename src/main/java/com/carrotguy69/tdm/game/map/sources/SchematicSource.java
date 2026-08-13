@@ -1,0 +1,36 @@
+package com.carrotguy69.tdm.game.map.sources;
+
+import com.carrotguy69.tdm.game.map.MapSource;
+import org.bukkit.Location;
+
+public class SchematicSource implements MapSource {
+
+    private final String fileName;
+    private final Location pasteLocation;
+
+    public SchematicSource(String fileName, Location pasteLocation) {
+        this.fileName = fileName;
+        this.pasteLocation = pasteLocation;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.SCHEMATIC;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Location getPasteLocation() {
+        return pasteLocation;
+    }
+
+    @Override
+    public String toString() {
+        return "SchematicSource{"
+                + "fileName=" + fileName + ","
+                + "pasteLocation=" + pasteLocation +
+                "}";
+    }
+}

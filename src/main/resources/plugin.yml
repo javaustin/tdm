@@ -1,0 +1,61 @@
+name: tdm
+version: '${version}'
+
+main: com.carrotguy69.tdm.TDM
+api-version: '26.1.2'
+load: POSTWORLD
+
+depend:
+  - cxyz
+  - WorldEdit
+
+
+commands:
+  tdm:
+    description: Manage a TDM game instance
+    usage: /tdm <create | delete | freeze | info | join | kit | leave | list | ready | setting> [...]
+    permission: "tdm"
+
+  print:
+    description: print
+    usage: /print
+    permission: "tdm.print"
+
+  test:
+    description: test
+    usage: /test
+    permission: "tdm.test"
+
+
+permissions:
+  tdm:
+    default: true
+  tdm.create:
+    default: op
+  tdm.delete:
+    default: op
+  tdm.join:
+    default: true
+  tdm.leave:
+    default: true
+  tdm.list:
+    default: true
+  tdm.kit:
+    default: true
+  tdm.info:
+    default: true
+  tdm.setting:
+    default: op
+  tdm.freeze:
+    default: op
+  tdm.ready:
+    default: true
+
+  tdm.team:
+    default: true
+  tdm.team.join:
+    default: true
+  tdm.team.leave:
+    default: true
+  tdm.team.list:
+    default: true

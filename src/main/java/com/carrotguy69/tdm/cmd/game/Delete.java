@@ -1,0 +1,60 @@
+package com.carrotguy69.tdm.cmd.game;
+
+import com.carrotguy69.cxyz.messages.MessageUtils;
+import com.carrotguy69.tdm.TDM;
+import com.carrotguy69.tdm.game.Game;
+import com.carrotguy69.tdm.messages.MessageGrabber;
+import com.carrotguy69.tdm.messages.TDMMessageKey;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
+public class Delete implements CommandExecutor {
+
+    public static CommandExecutor executor = new Delete();
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+        String node = "tdm.delete";
+
+        if (!sender.hasPermission(node)) {
+            MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.COMMAND_NO_ACCESS), Map.of("permission", node));
+            return true;
+        }
+
+        if (args.length == 0) {
+            MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.MISSING_GENERAL), Map.of("missing-args", "id"));
+            return true;
+        }
+
+        String key = args[0].toLowerCase();
+
+        Game game = Game.getByID(key);
+
+        if (game == null) {
+            MessageUtils.sendParsedMessage(
+                    sender,
+                    MessageGrabber.grab(TDMMessageKey.INVALID_GAME),
+                    Map.of("input", args[0])
+            );
+
+            return true;
+        }
+
+        game.delete(false);
+
+        TDM.gameIDMap.remove(key, game);
+
+        MessageUtils.sendParsedMessage(
+                sender,
+                com.carrotguy69.tdm.messages.MessageGrabber.grab(TDMMessageKey.COMMAND_DELETE_GAME),
+                Map.of("game-id", key.toLowerCase())
+        );
+
+        return true;
+    }
+
+}

@@ -1,0 +1,206 @@
+package com.carrotguy69.tdm.messages;
+
+public enum TDMMessageKey {
+
+    READY_INDICATOR("indicators.ready"),
+    NOT_READY_INDICATOR("indicators.not-ready"),
+
+    LOBBY_CHAT("lobby.chat"),
+    LOBBY_JOIN("lobby.join"),
+    LOBBY_LEAVE("lobby.leave"),
+
+    LOBBY_TEAMS_RESET_ANNOUNCEMENT("lobby.teams-reset-announcement"),
+
+    LOBBY_COUNTDOWN("lobby.info.start-countdown"),
+    START_CANCELLED("lobby.info.start-cancel"),
+
+    LOBBY_ALL_READY("lobby.info.all-ready"),
+
+    TEAM_JOIN("lobby.team.join"),
+    TEAM_JOIN_ANNOUNCEMENT("lobby.team.join-announcement"),
+
+    TEAM_LEAVE("lobby.team.leave"),
+    TEAM_LEAVE_ANNOUNCEMENT("lobby.team.leave-announcement"),
+
+    TEAM_LIST_PLAYERS("lobby.team.list.list"),
+
+    TEAM_LIST_PLAYERS_ENTRY_FORMAT("lobby.team.list.team-members-list.entry-format"),
+    TEAM_LIST_PLAYERS_DELIMITER("lobby.team.list.team-members-list.separator"),
+    TEAM_LIST_PLAYERS_MAX_ENTRIES("lobby.team.list.team-members-list.max-entries"),
+
+    GAME_CHAT("game.chat"),
+    GAME_JOIN("game.join"),
+    GAME_LEAVE("game.leave"),
+
+    GAME_TIMER_RESET_ANNOUNCEMENT("game.timer-reset-announcement"),
+
+    INFO_BLURB("game.info.blurb"),
+    INVUL_COUNTDOWN_MESSAGE("game.info.invul-countdown"),
+    INVUL_OVER_MESSAGE("game.info.invul-over"),
+    CHEST_REFILLED_MESSAGE("game.info.refill-announcement"),
+
+    MID_GAME_JOIN_TITLE("game.info.mid-game-join.title.title"),
+    MID_GAME_JOIN_SUBTITLE("game.info.mid-game-join.title.subtitle"),
+    MID_GAME_JOIN_FADE_IN_TICKS("game.info.mid-game-join.title.fade-in-ticks"),
+    MID_GAME_JOIN_STAY_TICKS("game.info.mid-game-join.title.stay-ticks"),
+    MID_GAME_JOIN_FADE_OUT_TICKS("game.info.mid-game-join.title.fade-out-ticks"),
+
+    INFO_MID_GAME_JOIN_MESSAGE("game.info.mid-game-join.message"),
+
+    SHOWDOWN_TITLE("game.info.showdown.title.title"),
+    SHOWDOWN_SUBTITLE("game.info.showdown.title.subtitle"),
+    SHOWDOWN_FADE_IN_TICKS("game.info.showdown.title.fade-in-ticks"),
+    SHOWDOWN_STAY_TICKS("game.info.showdown.title.stay-ticks"),
+    SHOWDOWN_FADE_OUT_TICKS("game.info.showdown.title.fade-out-ticks"),
+
+    SHOWDOWN_MESSAGE("game.info.showdown.message"),
+
+    DEATH_ANNOUNCEMENT_MELEE("game.death.announcement.player.melee"),
+    DEATH_ANNOUNCEMENT_PROJECTILE("game.death.announcement.player.projectile"),
+    DEATH_ANNOUNCEMENT_EXPLOSIVE("game.death.announcement.player.explosive"),
+    DEATH_ANNOUNCEMENT_NATURAL("game.death.announcement.player.default"),
+
+    DEATH_MESSAGE_MELEE("game.death.message.player.melee"),
+    DEATH_MESSAGE_PROJECTILE("game.death.message.player.projectile"),
+    DEATH_MESSAGE_EXPLOSIVE("game.death.message.player.explosive"),
+    DEATH_MESSAGE_NATURAL("game.death.message.player.default"),
+
+    KILL_MESSAGE_MELEE("game.kill.message.player.melee"),
+    KILL_MESSAGE_PROJECTILE("game.kill.message.player.projectile"),
+    KILL_MESSAGE_EXPLOSIVE("game.kill.message.player.explosive"),
+    KILL_MESSAGE_NATURAL("game.kill.message.player.default"),
+
+    DEATH_ANNOUNCEMENT_TEAM("game.death.announcement.team.default"),
+    DEATH_MESSAGE_TEAM("game.death.message.team.default"),
+    KILL_MESSAGE_TEAM("game.kill.message.team.default"),
+
+    WIN_TITLE("game.win.victory-title.title"),
+    WIN_SUBTITLE("game.win.victory-title.subtitle"),
+    WIN_FADE_IN_TICKS("game.win.victory-title.fade-in-ticks"),
+    WIN_STAY_TICKS("game.win.victory-title.stay-ticks"),
+    WIN_FADE_OUT_TICKS("game.win.victory-title.fade-out-ticks"),
+
+    LOSE_TITLE("game.win.lose-title.title"),
+    LOSE_SUBTITLE("game.win.lose-title.subtitle"),
+    LOSE_FADE_IN_TICKS("game.win.lose-title.fade-in-ticks"),
+    LOSE_STAY_TICKS("game.win.lose-title.stay-ticks"),
+    LOSE_FADE_OUT_TICKS("game.win.lose-title.fade-out-ticks"),
+
+
+    GUN_OUT_OF_AMMO("game.gun.out-of-ammo"),
+    GUN_AMMO_INDICATOR("game.gun.ammo-indicator-action-bar"),
+    GUN_RELOAD_FAIL("game.gun.reload-action-bar.fail"),
+    GUN_RELOAD_SUCCESS("game.gun.reload-action-bar.success"),
+    GUN_RELOAD_BG_UNITS("game.gun.reload-action-bar.background-units"),
+    GUN_RELOAD_PROGRESS_UNITS("game.gun.reload-action-bar.progress-units"),
+
+    DEATH_RESPAWN_TITLE("game.death.title-with-respawn.title"),
+    DEATH_RESPAWN_SUBTITLE("game.death.title-with-respawn.subtitle"),
+    DEATH_RESPAWN_FADE_IN_TICKS("game.death.title-with-respawn.fade-in-ticks"),
+    DEATH_RESPAWN_STAY_TICKS("game.death.title-with-respawn.stay-ticks"),
+    DEATH_RESPAWN_FADE_OUT_TICKS("game.death.title-with-respawn.fade-out-ticks"),
+
+    RESPAWN_TITLE("game.respawn.title.title"),
+    RESPAWN_SUBTITLE("game.respawn.title.subtitle"),
+    RESPAWN_FADE_IN_TICKS("game.respawn.title.fade-in-ticks"),
+    RESPAWN_STAY_TICKS("game.respawn.title.stay-ticks"),
+    RESPAWN_FADE_OUT_TICKS("game.respawn.title.fade-out-ticks"),
+
+    RESPAWN_MESSAGE("game.respawn.message"),
+
+    TOP_KILLERS_LIST_ENTRY_FORMAT("game.recaps.top-killers-numbered-list.entry-format"),
+    TOP_KILLERS_LIST_DELIMITER("game.recaps.top-killers-numbered-list.separator"),
+    TOP_KILLERS_LIST_MAX_ENTRIES("game.recaps.top-killers-numbered-list.max-entries"),
+
+    TEAM_LIST_ENTRY_FORMAT("game.recaps.team-list.entry-format"),
+    TEAM_LIST_DELIMITER("game.recaps.team-list.separator"),
+    TEAM_LIST_MAX_ENTRIES("game.recaps.team-list.max-entries"),
+
+
+    RECAP_WINNER("game.recaps.winner"),
+
+    INVALID_GAME("errors.args.invalid.game"),
+    INVALID_MAP("errors.args.invalid.map"),
+    INVALID_TEAM("errors.args.invalid.team"),
+    INVALID_LOOT_TABLE("errors.args.invalid.loot-table"),
+    INVALID_TEAM_CAPACITY("errors.args.invalid.team-capacity"),
+    INVALID_AMOUNT_OF_TEAMS("errors.args.invalid.amount-of-teams"),
+    INVALID_INTEGER("errors.args.invalid.integer"),
+    INVALID_GAME_SETTING("errors.args.invalid.setting"),
+    INVALID_KIT("errors.args.invalid.kit"),
+    INVALID_PAGE("errors.args.invalid.page"),
+    INVALID_RANGE("errors.args.invalid.range"),
+
+    LOBBY_INVALID_MAP("errors.args.invalid.lobby-map"),
+
+    ERROR_NO_GAMES("errors.game.no-games"),
+    ERROR_DUPLICATE_GAME("errors.game.duplicate-game"),
+    ERROR_DUPLICATE_GAME_JOIN("errors.game.duplicate-game-join"),
+    ERROR_GAME_ALREADY_IN_GAME("errors.game.already-in-game"),
+    ERROR_NOT_IN_GAME("errors.game.not-in-game"),
+
+    ERROR_TEAM_NO_SWITCHING("errors.team.no-switching"),
+    ERROR_TEAM_FULL("errors.team.full"),
+    ERROR_TEAM_NOT_IN_TEAM("errors.team.not-in-team"),
+    ERROR_TEAM_ALREADY_IN_TEAM("errors.team.already-in-team"),
+
+    COMMAND_NO_ACCESS("errors.command.no-access"),
+    COMMAND_PLAYER_ONLY("errors.command.player-only"),
+
+    ERROR_PLAYER_IS_OFFLINE("errors.player.is-offline"),
+    ERROR_PLAYER_IS_SELF("errors.player.is-self"),
+    ERROR_PLAYER_NOT_FOUND("errors.player.not-found"),
+
+    MISSING_GENERAL("errors.args.missing.general"),
+
+    COMMAND_CREATE_GAME("command.create"),
+    COMMAND_DELETE_GAME("command.delete"),
+    COMMAND_JOIN_GAME("command.join"),
+    COMMAND_LEAVE_GAME("command.leave"),
+
+    COMMAND_KIT("command.kit"),
+    COMMAND_KIT_FAIL("command.kit-fail"),
+
+    COMMAND_DELETE_GAME_TITLE("command.delete-announcement-title.title"),
+    COMMAND_DELETE_GAME_SUBTITLE("command.delete-announcement-title.subtitle"),
+    COMMAND_DELETE_GAME_FADE_IN_TICKS("command.delete-announcement-title.fade-in-ticks"),
+    COMMAND_DELETE_GAME_STAY_TICKS("command.delete-announcement-title.stay-ticks"),
+    COMMAND_DELETE_GAME_FADE_OUT_TICKS("command.delete-announcement-title.fade-out-ticks"),
+
+    COMMAND_LIST_GAMES("command.list.message"),
+    COMMAND_LIST_GAMES_BLANK("command.list.blank"),
+    COMMAND_LIST_GAMES_FORMAT("command.list.entry-format"),
+    COMMAND_LIST_GAMES_DELIMITER("command.list.separator"),
+    COMMAND_LIST_GAMES_MAX_ENTRIES("command.list.max-entries-per-page"),
+
+    COMMAND_GAME_INFO("command.info.message"),
+    COMMAND_GAME_INFO_BLANK("command.info.blank"),
+    COMMAND_GAME_INFO_FORMAT("command.info.entry-format"),
+    COMMAND_GAME_INFO_DELIMITER("command.info.separator"),
+    COMMAND_GAME_INFO_MAX_ENTRIES("command.info.max-entries"),
+
+    COMMAND_GAME_SETTING_GET("command.setting.get"),
+    COMMAND_GAME_SETTING_SET("command.setting.set"),
+    COMMAND_GAME_SETTING_FAIL("command.setting.fail"),
+
+    GAME_FREEZE_ANNOUNCEMENT("command.freeze"),
+    GAME_UNFREEZE_ANNOUNCEMENT("command.unfreeze"),
+
+    GAME_TOGGLE_READY("command.toggle-ready"),
+    GAME_TOGGLE_NOT_READY("command.toggle-not-ready"),
+    GAME_TOGGLE_READY_FAIL("command.toggle-ready-fail"),
+
+    SET_PLAYER_LIVES("command.set-player-lives"),
+    GET_PLAYER_LIVES("command.get-player-lives"),
+    ;
+
+    private final String path;
+
+    TDMMessageKey(String path) {
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
+}

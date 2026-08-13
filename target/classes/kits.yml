@@ -1,0 +1,226 @@
+kits:
+  # Slot Guide
+  #   Hotbar:       0  ->  8       (left -> right)
+  #   Inventory:    9  ->  35      (left/up -> right/down)
+  #   Armor:        -1 ->  -4      (top -> down)
+  #       - helmet = -1
+  #       - chest = -2
+  #       - leggings = -3
+  #       - boots = -4
+
+  rookie:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: rifle
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: arrow
+      slot: 7
+
+  scout:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: shotgun
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: arrow
+      slot: 7
+
+    - id: chain-legs
+      slot: -3
+
+    - id: chain-boots
+      slot: -4
+
+
+  heavy:
+    - id: stone
+      slot: 0
+
+    - id: machine-gun
+      slot: 1
+
+    - id: tracker
+      slot: 8
+
+    - id: diamond-legs
+      slot: -3
+
+    - id: diamond-boots
+      slot: -4
+
+
+  sniper:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: sniper
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: 2-arrows
+      slot: 7
+
+    - id: iron-boots
+      slot: -4
+
+mc-items:
+  # Items in this section have no custom behavior. They will appear as basic Minecraft items.
+
+  dagger:
+    name: "&bDagger"
+    material: IRON_SWORD
+    amount: 1
+    lore:
+      - Slay your enemies at close range
+    enchants:
+      - id: SHARPNESS
+        level: 1
+
+  stone:
+    material: STONE_SWORD
+
+  bow:
+    name: "&bOne-shot Bow"
+    material: BOW
+    amount: 1
+    lore:
+      - Enemies shot by this bow are killed instantly
+    enchants:
+      - id: POWER
+        level: 100
+
+  arrow:
+    material: ARROW
+    # It's okay to leave these blank
+
+  2-arrows:
+    material: ARROW
+    amount: 2
+
+  chain-legs:
+    material: CHAINMAIL_LEGGINGS
+
+  chain-boots:
+    material: CHAINMAIL_BOOTS
+
+  diamond-legs:
+    material: DIAMOND_LEGGINGS
+
+  diamond-boots:
+    material: DIAMOND_BOOTS
+
+  iron-boots:
+    material: IRON_BOOTS
+
+guns:
+
+  rifle:
+    name: "&dBasic rifle"
+    material: WOODEN_HOE
+    magazine-size: 8
+    starting-ammo: 8
+    projectiles: 1
+    vertical-spread: 0.5
+    horizontal-spread: 0
+    fire-rate-per-second: 2.1
+    reload-time-seconds: 1.5
+    damage: 4.5
+    range: 50
+    lore:
+      - "Damage: &f4 HP"
+      - "Fire rate: &f2.1 shots per second"
+      - "Projectiles: &f1 per shot"
+    enchants:
+      -
+
+  sniper:
+    name: "&dSniper rifle"
+    material: IRON_HOE
+    magazine-size: 4
+    starting-ammo: 4
+    projectiles: 1
+    vertical-spread: 0
+    horizontal-spread: 0
+    fire-rate-per-second: 0.6
+    reload-time-seconds: 4
+    damage: 16
+    range: 100
+    lore:
+      - "Damage: 20 HP"
+      - "Fire rate: 0.6 rounds/sec"
+    enchants:
+      -
+
+  machine-gun:
+    name: "&dMachine Gun"
+    material: NETHERITE_HOE
+    magazine-size: 16
+    starting-ammo: 16
+    projectiles: 1
+    vertical-spread: 1.3
+    horizontal-spread: 1
+    fire-rate-per-second: 11
+    reload-time-seconds: 2.2
+    damage: 2.5
+    range: 35
+    lore:
+      - "Damage: 2 HP"
+      - "Fire rate: 8 rounds per second"
+    enchants:
+      -
+
+  shotgun:
+    name: "&dShotgun"
+    material: IRON_SHOVEL
+    magazine-size: 3
+    starting-ammo: 3
+    projectiles: 10
+    vertical-spread: 1
+    horizontal-spread: 2
+    fire-rate-per-second: 5
+    reload-time-seconds: 2.2
+    damage: 2.5 # Damage is counted PER PROJECTILE
+    range: 14
+    lore:
+      - "Damage: 10 HP"
+      - "Fire rate: &f4 rounds (of 10) per second"
+    enchants:
+      -
+
+
+custom-items:
+
+  basic-ammo:
+    name: "&dUniversal ammo"
+    material: GOLD_NUGGET
+    custom-type: ammo
+
+  grenade:
+    name: "&cThrowable grenade"
+    material: TNT
+    custom-type: grenade
+
+  tracker:
+    name: "&aPlayer tracker"
+    material: COMPASS
+    custom-type: player_tracker

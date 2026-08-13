@@ -1,0 +1,148 @@
+game:
+
+  respawns:
+    # Time (in seconds) a player must wait before respawning. Set this value to 0 or below to respawn immediately.
+    respawn-seconds: 3
+
+  misc:
+    # Should new players be allowed to join during an active game?
+    allow-join-during-game: true
+
+    # Default gamemode used for active players (spectators excluded).
+    default-gamemode: adventure
+
+  click-actions:
+    # Execute commands upon right or left-clicking with an item in the hand.
+    #    item: a Minecraft item
+    #    click-type: [RIGHT_CLICK, LEFT_CLICK]
+    #    actions: Command actions executed from the context of the clicking player.
+
+    red-wool:
+      click-type: RIGHT_CLICK
+      actions:
+        - tdm team join red
+
+    blue-wool:
+      click-type: RIGHT_CLICK
+      actions:
+        - tdm team join blue
+
+
+  command-actions:
+    # Execute console commands upon common game events.
+    # Leaving a list empty will execute no commands.
+    # Commands should NOT begin with "/"
+
+    on-lobby:
+      # Available placeholders: {player}, {game}
+      # NOT A LOOP! Runs for individual players in the lobby if they newly join.
+      - "gamerule locator_bar false"
+      - "difficulty hard"
+
+    on-prep:
+      # Available placeholders: {game}
+      # NOT A LOOP! Runs ONLY one time while the arena is prepped and players are spawned.
+      -
+
+    on-start:
+      # Available placeholders: {player}, {game}
+      # Runs once for every player after game completely starts. Runs again for individual players if they newly join.
+      - "effect give {player} minecraft:speed infinite 1 true"
+
+    on-death:
+      # Available placeholders: {player}, {game}
+      # Runs once for a single players' death
+      -
+
+    on-kill:
+      # Available placeholders: {attacker}, {player}
+
+      # Runs once for a players' death and involves the attacker.
+      # [!] Beware of duplicate commands. The command actions in on-death will also run during a kill.
+      - "heal {attacker}"
+
+    on-win:
+      # Available placeholders {player}, {game}
+
+      # Runs once for every player on the winning team.
+      - "effect clear {player} minecraft:speed"
+
+    on-lose:
+      # Available placeholders {player}, {game}
+
+      # Runs once for every player on any losing team.
+      - "effect clear {player} minecraft:speed"
+
+  teams:
+    # There are two teams used in TDM games.
+    # id            -    The raw id of the team, not displayed in game. Used for lookup in commands.
+    # display-name  -    The display name of the team. Displayed in chat and menus.
+
+    # Note: Team colors are derived from the display name ("&c" -> #FF5555).
+
+    team-1: # <-- Do NOT modify the top key.
+      id: "red"
+      display-name: "&c&lRED "
+
+    team-2: # <-- Do NOT modify the top key.
+      id: "blue"
+      display-name: "&9&lBLUE "
+
+    # Set this value to true if you want the plugin to spawn in team-colored armor for each player.
+    use-armor: true
+
+  timers:
+    # Seconds players wait in the lobby before being moved into the arena.
+    lobby-countdown: 10
+
+    # Seconds players wait before the game officially begins.
+    game-countdown: 10
+
+    # Maximum game duration in seconds from the start until the end.
+    game-end: 600
+
+
+scoreboards:
+  # Enables or disables scoreboards entirely
+  enabled: true
+
+  # Scoreboards do not use the CXYZ message parser, so you can't use click/hover actions, but placeholders values are still supported.
+  # Minecraft scoreboards cannot contain duplicate values. You can use color codes (i.e.: "&a", "&6") for unique blank separators.
+
+  lobby:
+    # The effective scoreboard for a non-active game (waiting in lobby).
+
+    - "&e&lTDM" # The first entry of this list will become the scoreboard title
+    - "&7{player-date-short}"
+    - "&7{player-time-short}"
+    - "&0"
+    - "&eYou are on &f{player-team-prefix-display}"
+    - "&1"
+    - "&eRank: {player-rank-prefix-display}"
+    - "&2"
+    - "&eKills: &f{player-stat-tdm-lifetime-kills} &7(#{player-stat-tdm-lifetime-kills-ranking})"
+    - "&eWins: &f{player-stat-tdm-lifetime-wins} &7(#{player-stat-tdm-lifetime-wins-ranking})"
+    - "&3"
+    - "&e{game-next-event}: &f{game-next-event-time}"
+    - "&4"
+    - "&b&l/discord"
+    - "&6cerrot.xyz"
+
+  game:
+    # The effective scoreboard for an active game.
+
+    - "&e&lTDM"
+    - "&7{player-date-short}"
+    - "&7{player-time-short}"
+    - "&1"
+    - "&eYou are on {player-team-prefix}"
+    - "&2"
+    - "{team-1-prefix-display}: &f{team-1-score}/{game-winning-kills}"
+    - "{team-2-prefix-display}: &f{team-2-score}/{game-winning-kills}"
+    - "&3"
+    - "&e{game-next-event}: &f{game-next-event-time}"
+    - "&4"
+    - "&eMap: &f{game-map}"
+    - "&5"
+    - "&b&l/discord"
+    - "&6cerrot.xyz"
