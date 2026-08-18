@@ -8,6 +8,8 @@ kits:
   #       - leggings = -3
   #       - boots = -4
 
+  default-kit: rookie
+
   rookie:
     - id: dagger
       slot: 0
@@ -91,7 +93,7 @@ mc-items:
     material: IRON_SWORD
     amount: 1
     lore:
-      - Slay your enemies at close range
+      - "&4Slay your enemies at close range"
     enchants:
       - id: SHARPNESS
         level: 1
@@ -100,11 +102,11 @@ mc-items:
     material: STONE_SWORD
 
   bow:
-    name: "&bOne-shot Bow"
+    name: "&bOne-Shot Bow"
     material: BOW
     amount: 1
     lore:
-      - Enemies shot by this bow are killed instantly
+      - "&6Enemies shot by this bow are killed instantly"
     enchants:
       - id: POWER
         level: 100
@@ -200,7 +202,7 @@ guns:
     fire-rate-per-second: 5
     reload-time-seconds: 2.2
     damage: 2.5 # Damage is counted PER PROJECTILE
-    range: 14
+    range: 15
     lore:
       - "Damage: 10 HP"
       - "Fire rate: &f4 rounds (of 10) per second"

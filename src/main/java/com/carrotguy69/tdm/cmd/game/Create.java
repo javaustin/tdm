@@ -99,7 +99,7 @@ public class Create implements CommandExecutor {
         }
 
         game = new Game(gameId.toLowerCase(), gameMap, capacity, defaultKit);
-        TDM.gameIDMap.put(game.getGameID().toLowerCase(), game);
+
 
         MessageUtils.sendParsedMessage(
                 sender,
@@ -110,7 +110,7 @@ public class Create implements CommandExecutor {
         return true;
     }
 
-    private String generateValidGameID() {
+    public static String generateValidGameID() {
         for (int i = 1; i < 100; i++) {
             Game game = Game.getByID("tdm-" + i);
 

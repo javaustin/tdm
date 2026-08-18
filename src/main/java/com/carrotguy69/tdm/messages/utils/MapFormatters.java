@@ -8,6 +8,7 @@ import com.carrotguy69.tdm.game.GameState;
 import com.carrotguy69.tdm.game.GameTeam;
 import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
+import com.carrotguy69.tdm.utils.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -34,7 +35,10 @@ public class MapFormatters {
         commonMap.put("player-health", String.format("%.1f", gp.getBukkitPlayer().getHealth()));
         commonMap.put("player-hp", String.format("%.1f", gp.getBukkitPlayer().getHealth()));
 
-        commonMap.put("player-kit", gp.kit.toUpperCase());
+        if (gp.kit == null) {
+            Logger.log("game player kit for %s is null".formatted(gp.getNetworkPlayer().getUsername()));
+        }
+        commonMap.put("player-kit", gp.kit != null ? gp.kit.toUpperCase() : "");
 
         for (Map.Entry<String, Double> entry : gp.getTemporaryStat().entrySet()) {
             String key = entry.getKey();

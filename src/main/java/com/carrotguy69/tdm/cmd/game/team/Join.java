@@ -1,6 +1,7 @@
 package com.carrotguy69.tdm.cmd.game.team;
 
 import com.carrotguy69.cxyz.messages.MessageUtils;
+import com.carrotguy69.cxyz.utils.ObjectUtils;
 import com.carrotguy69.tdm.game.Game;
 
 import com.carrotguy69.tdm.game.GamePlayer;
@@ -32,6 +33,7 @@ public class Join implements CommandExecutor {
 
         String node = "tdm.team.join";
 
+
         if (!sender.hasPermission(node)) {
             MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.COMMAND_NO_ACCESS), Map.of("permission", node));
             return true;
@@ -46,6 +48,9 @@ public class Join implements CommandExecutor {
             MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.MISSING_GENERAL), Map.of("missing-args", "team"));
             return true;
         }
+
+        boolean beQuiet = String.join(" ", args).contains("-s");
+        ObjectUtils.removeItem(args, "-s");
 
         Game game = Game.getByPlayer(p);
 
@@ -66,6 +71,10 @@ public class Join implements CommandExecutor {
         Map<String, Object> commonMap = MapFormatters.teamFormatter(team); // team is allowed to be null for the formatter
 
         if (originalTeam != null && originalTeam.equals(team)) {
+            if (beQuiet) {
+                return true;
+            }
+
             MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.ERROR_TEAM_ALREADY_IN_TEAM), commonMap);
             return true;
         }

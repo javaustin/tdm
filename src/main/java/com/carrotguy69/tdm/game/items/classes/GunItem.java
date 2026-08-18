@@ -9,9 +9,11 @@ import com.carrotguy69.tdm.game.items.GenericItem;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
+import com.carrotguy69.tdm.utils.Logger;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -27,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -163,6 +166,12 @@ public class GunItem implements GenericItem {
     }
 
     public void setCurrentAmmo(int newAmount) {
+
+        if (newAmount > magSize) {
+            Logger.severe(String.format("Attempted to set an amount of ammo beyond the mag size! (%d > %d)", newAmount, magSize));
+            return;
+        }
+
         this.currentAmmo = newAmount;
     }
 
@@ -423,10 +432,25 @@ public class GunItem implements GenericItem {
 
 
         Vector direction = toEnd.clone().multiply(1.0 / maxDist);
+
+        RayTraceResult blockHit = shooter.getWorld().rayTraceBlocks(origin, direction, maxDist, FluidCollisionMode.NEVER, true);
+
+        double blockHitDistance = Double.MAX_VALUE;
+
+        if (blockHit != null) {
+            blockHitDistance = blockHit.getHitPosition()
+                    .distance(origin.toVector());
+        }
+
         double stepSize = 0.2; // Smaller step size for closely spaced particles
 
 
         for (double distance = 0; distance < maxDist; distance += stepSize) {
+
+            if (distance >= blockHitDistance) {
+                return;
+            }
+
             Location particleLocation = origin.clone().add(direction.clone().multiply(distance));
 
             world.spawnParticle(Particle.CRIT, particleLocation, 1, 0, 0, 0, 0); // Spawn particle along trajectory
@@ -451,9 +475,9 @@ public class GunItem implements GenericItem {
                 }
             }
 
-            if (!particleLocation.getBlock().isPassable()) {
-                return;
-            }
+//            if (!particleLocation.getBlock().isPassable() && particleLocation.getBlock().isCollidable()) {
+//                return;
+//            }
         }
     }
 

@@ -49,7 +49,7 @@ game:
   info:
     blurb: |
         &f---------------------- &e&lTDM &f----------------------
-        &eKill your enemies by using your dagger, rifle, or one-shot-kill bow. The first team to reach {game-winning-kills} kills wins the game!
+        &eKill your enemies by using your the available items in your kit. The first team to reach {game-winning-kills} kills wins the game!
         &f-------------------------------------------------
     invul-countdown: "&cInvulnerability wears off in {count} seconds." # {count}
     invul-over: "&4Invulnerability has worn off!"
@@ -216,8 +216,8 @@ command:
   freeze: "&7[[&4!&7]] {player-rank-prefix}{player-rank-color}{player-display-name} &efroze the game!"
   unfreeze: "&7[[&4!&7]] {player-rank-prefix}{player-rank-color}{player-display-name} &eunfroze the game!"
 
-  toggle-ready: "&aYou are ready!"
-  toggle-not-ready: "&aYou are not ready!"
+  toggle-ready: ""
+  toggle-not-ready: ""
   toggle-ready-fail: "&eThis command is only available in the lobby."
 
   set-player-lives: "&aSet {player}'s lives to {player-lives}."

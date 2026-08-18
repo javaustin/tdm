@@ -13,11 +13,13 @@ com/carrotguy69/tdm/game/items/managers/CustomItemManager.class
 com/carrotguy69/tdm/utils/Startup.class
 com/carrotguy69/tdm/tabCompleters/Team.class
 com/carrotguy69/tdm/eventHandler/VanishHandler.class
+com/carrotguy69/tdm/TDM$1.class
 com/carrotguy69/tdm/cmd/game/_GameSupercommand.class
 com/carrotguy69/tdm/game/Game$9.class
 com/carrotguy69/tdm/cmd/game/Info.class
 com/carrotguy69/tdm/game/items/GenericItem$Type.class
 com/carrotguy69/tdm/utils/objects/LocationUtils.class
+com/carrotguy69/tdm/utils/objects/GlowUtils.class
 com/carrotguy69/tdm/game/Game$1.class
 com/carrotguy69/tdm/cmd/game/Leave.class
 com/carrotguy69/tdm/cmd/game/Delete.class
@@ -46,7 +48,9 @@ com/carrotguy69/tdm/cmd/game/Join.class
 com/carrotguy69/tdm/game/Game$10.class
 com/carrotguy69/tdm/cmd/game/team/Leave.class
 com/carrotguy69/tdm/cmd/game/team/Join.class
+com/carrotguy69/tdm/TDM$2.class
 com/carrotguy69/tdm/game/other/Durations.class
+com/carrotguy69/tdm/TDM$AutoJoinScope.class
 com/carrotguy69/tdm/game/Game$6.class
 com/carrotguy69/tdm/game/other/DamageSource$Reason.class
 com/carrotguy69/tdm/game/map/MapSource$Type.class

@@ -1,3 +1,9 @@
+auto-join:
+  enabled: true    # If this is enabled, players that join the (server or world depending on scope) will automatically be added to a TDM game.
+  scope: server    # Scope
+                   #   server: Any player who joins the server will be automatically added
+                   #   world: Any player who joins the world will be automatically added
+
 game:
 
   respawns:
@@ -18,15 +24,31 @@ game:
     #    actions: Command actions executed from the context of the clicking player.
 
     red-wool:
-      click-type: RIGHT_CLICK
+      click-type: ANY
       actions:
-        - tdm team join red
+        - sudo {player} tdm team join red -s
 
     blue-wool:
+      click-type: ANY
+      actions:
+        - sudo {player} tdm team join blue -s
+
+    gray-dye:
       click-type: RIGHT_CLICK
       actions:
-        - tdm team join blue
+        - "minecraft:item replace entity {player} hotbar.7 with minecraft:lime_dye[minecraft:custom_name=[{\"text\":\"Ready\",\"italic\":false,\"color\":\"green\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"yellow\"}]]] 1"
+        - sudo {player} tdm ready
 
+    lime-dye:
+      click-type: RIGHT_CLICK
+      actions:
+        - sudo {player} tdm ready
+        - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"white\"}]]] 1"
+
+    chest:
+      click-type: ANY
+      actions:
+        - pa open kit-selector {player}
 
   command-actions:
     # Execute console commands upon common game events.
@@ -38,6 +60,10 @@ game:
       # NOT A LOOP! Runs for individual players in the lobby if they newly join.
       - "gamerule locator_bar false"
       - "difficulty hard"
+      - "minecraft:item replace entity {player} hotbar.1 with minecraft:chest[minecraft:custom_name=[{\"text\":\"Kit Selector\",\"italic\":false,\"color\":\"light_purple\"}],lore=[[{\"text\":\"Right click to select a kit\",\"italic\":false,\"color\":\"yellow\"}]],enchantment_glint_override=true] 1"
+      - "minecraft:item replace entity {player} hotbar.3 with minecraft:red_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"RED\",\"bold\":true,\"italic\":false,\"color\":\"red\"}]] 1"
+      - "minecraft:item replace entity {player} hotbar.5 with minecraft:blue_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"BLUE\",\"bold\":true,\"italic\":false,\"color\":\"blue\"}]] 1"
+      - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status. If all players are ready, the lobby countdown timer will be skipped.\",\"italic\":false,\"color\":\"white\"}]]] 1"
 
     on-prep:
       # Available placeholders: {game}
@@ -47,6 +73,7 @@ game:
     on-start:
       # Available placeholders: {player}, {game}
       # Runs once for every player after game completely starts. Runs again for individual players if they newly join.
+      - "effect clear {player}"
       - "effect give {player} minecraft:speed infinite 1 true"
 
     on-death:
@@ -93,7 +120,7 @@ game:
 
   timers:
     # Seconds players wait in the lobby before being moved into the arena.
-    lobby-countdown: 10
+    lobby-countdown: 30
 
     # Seconds players wait before the game officially begins.
     game-countdown: 10
@@ -114,7 +141,7 @@ scoreboards:
 
     - "&e&lTDM" # The first entry of this list will become the scoreboard title
     - "&7{player-date-short}"
-    - "&7{player-time-short}"
+    - "&7{player-time}"
     - "&0"
     - "&eYou are on &f{player-team-prefix-display}"
     - "&1"

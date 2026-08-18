@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 public class LocationUtils {
 
@@ -82,7 +80,7 @@ public class LocationUtils {
         }
 
         for (GamePlayer enemy : enemies) {
-            if (enemy != gp && gp.getBukkitPlayer().canSee(enemy.getBukkitPlayer()) && enemy.getBukkitPlayer().getWorld() == gp.getBukkitPlayer().getWorld()) {
+            if (gp.getBukkitPlayer() != null && enemy != gp && enemy != null && gp.getBukkitPlayer().canSee(enemy.getBukkitPlayer()) && enemy.getBukkitPlayer().getWorld() == gp.getBukkitPlayer().getWorld()) {
                 double distanceSquared = gp.getBukkitPlayer().getLocation().distanceSquared(enemy.getBukkitPlayer().getLocation());
                 if (distanceSquared < nearestDistanceSquared) {
                     nearestPlayer = enemy.getBukkitPlayer();

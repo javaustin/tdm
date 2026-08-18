@@ -23,6 +23,7 @@ import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
+import com.carrotguy69.tdm.utils.objects.GlowUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -40,8 +41,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -158,7 +157,11 @@ public class Game {
     public Game(String id, GameMap map, NumberRange gameCapacity, String defaultKit) {
 
         this.gameID = id.toLowerCase();
+
+        TDM.gameIDMap.put(gameID, this);
+
         this.map = map;
+
 
         if (map.getID().equalsIgnoreCase("lobby")) {
             throw new RuntimeException("The lobby cannot be used as a game map.");
@@ -182,7 +185,7 @@ public class Game {
         nextCapacity = gameCapacity;
 
         if (defaultKit == null) {
-            defaultKit = GenericItemRegistry.kits.entrySet().stream().toList().getFirst().getKey();
+            defaultKit = TDM.defaultKit;
         }
         this.defaultKit = defaultKit;
 
@@ -275,13 +278,6 @@ public class Game {
 
         createTeams();
 
-        try {
-            lobbyMap.paste(); // Will only paste if specified as a world_copy or schematic
-        }
-        catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
         if (lobbyMap.isWorldBorderEnabled()) {
             lobbyMap.getWorld().getWorldBorder().setCenter(Math.round(lobbyMap.getBounds().getCenterX()), Math.round(lobbyMap.getBounds().getCenterZ()));
             lobbyMap.getWorld().getWorldBorder().setSize(Math.round(Math.max(lobbyMap.getBounds().getWidthX(), lobbyMap.getBounds().getWidthZ())));
@@ -319,7 +315,7 @@ public class Game {
 
         gp.setTemporaryStat("kills", 0);
 
-        p.setGlowing(false);
+        GlowUtils.resetGlowing(p);
 
         if (gameState == GameState.WAITING) {
             spawnPlayer(p, lobbyMap.getSpawns().size() > 1 ? lobbyMap.getSpawns().get(new Random().nextInt(0, lobbyMap.getSpawns().size() - 1)) : lobbyMap.getSpawns().getFirst());
@@ -395,7 +391,11 @@ public class Game {
         updateScoreboard();
 
         if (!isPlayable() && gameState == GameState.ACTIVE) {
-            win(getLeadingTeam());
+            GameTeam lead = getLeadingTeam();
+
+            if (lead != null) {
+                win(lead);
+            }
         }
     }
 
@@ -405,17 +405,13 @@ public class Game {
 
     private void spawnPlayer(Player p, Location l) {
         p.closeInventory();
+        p.getInventory().clear(); // only for tdm
         p.setFireTicks(0);
         p.setGameMode(defaultGamemode);
         p.setFlying(false);
         Objects.requireNonNull(p.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20.0); // The "official" (non-deprecated) way to set max health?
         p.setHealth(20.0);
         p.setFoodLevel(20);
-        for (PotionEffect effect : p.getActivePotionEffects()) {
-            if (effect.getType() != PotionEffectType.NIGHT_VISION) // This is our FakeFullbright hook lol
-                p.removePotionEffect(effect.getType());
-        }
-
         p.teleport(l.clone().add(0.5, 1, 0.5));
     }
 
@@ -599,7 +595,7 @@ public class Game {
     }
 
     public void assignTeam(GamePlayer gp, GameTeam team) {
-        if (team.getPlayers().size() == this.getPlayers().size() - 1) {
+        if (team.getPlayers().size() == this.getPlayers().size() - 1 && this.getPlayers().size() != 1) {
             throw new RuntimeException(String.format("Denied adding player %s to team because it would cause only one team to have players.", gp.getNetworkPlayer().getUsername()));
         }
 
@@ -916,7 +912,8 @@ public class Game {
 
                 spawnPlayer(p, map.getSpawns().get(spawnIndex));
                 prepInventory(gp);
-                gp.setGlowing();
+
+                GlowUtils.setGlowing(p, gp.getTeam().getRGBColor());
             }
         }
     }
@@ -1120,7 +1117,10 @@ public class Game {
             }
         }
 
-        win(winner);
+        if (winner != null) {
+            win(winner);
+        }
+
     }
 
     public void resetLastDamageSource(GamePlayer gp) {
@@ -1261,16 +1261,35 @@ public class Game {
         // entity to act as the location. (e.g.: /summon lightning {player})
 
         if (isWon()) {
-            win(getLeadingTeam());
+            GameTeam lead = getLeadingTeam();
+
+            if (lead != null) {
+                // the opposite of this condition should be impossible
+                win(lead);
+            }
         }
     }
 
     public boolean isWon() {
-        return getLeadingTeam().getStat("kills", 0) >= killsToWin;
+        GameTeam lead = getLeadingTeam();
+
+        return lead != null && lead.getStat("kills", 0) >= killsToWin;
     }
 
-    public GameTeam getLeadingTeam() {
-        return teams.stream().sorted(Comparator.comparingDouble(gt -> gt.getStat("kills", 0))).toList().reversed().getFirst();
+    public @Nullable GameTeam getLeadingTeam() {
+
+        GameTeam current = teams.getFirst();
+
+        for (GameTeam team : teams) {
+            if (team.getPlayers().isEmpty())
+                continue;
+
+            if (team.getStat("kills", 0) > current.getStat("kills", 0)) {
+                current = team;
+            }
+        }
+
+        return current;
     }
 
     public GameTeam getNonLeadingTeam() {
@@ -1450,7 +1469,6 @@ public class Game {
                 cancelAllTasks();
                 gameState = GameState.RESET;
                 Game newGame = transfer();
-                gameIDMap.put(newGame.getGameID(), newGame);
             }
         }.runTaskLater(plugin, 7 * 20L);
 
@@ -1624,6 +1642,8 @@ public class Game {
 
         for (int i = 0; i < nPlayers; i++) {
             int j = (i < nSpawns) ? i : (i % nSpawns);
+
+            players.get(i).getInventory().clear();
 
             spawnPlayer(players.get(i), lobbyMap.getSpawns().get(j));
         }

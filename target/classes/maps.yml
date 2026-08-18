@@ -2,98 +2,103 @@ maps:
   lobby:
     # IMPORTANT: do not rename or delete this map
     # This is the waiting lobby players will be teleported to if a game is not active.
-    source:
-      type: STATIC
 
-    world: "world"
+    world: "tdm-world"
 
     spawns:
-      - {world: "world", x: -508, y: 85, z: -597, yaw: 90.0, pitch: 0.0}
+      - {world: "tdm-world", x: -529, y: 92, z: 150, yaw: 0.0, pitch: 0.0}
 
     bounds:
       pos1:
-        - {world: "world", x: -480, y: 113, z: -547, yaw: 0.0, pitch: 0.0}
+        - {world: "tdm-world", x: -518, y: 88, z: 162, yaw: 0.0, pitch: 0.0}
       pos2:
-        - {world: "world", x: -580, y: 98, z: -647, yaw: 0.0, pitch: 45.0}
-#
-#  example1:
-#    display-name: "A map loaded from a schematic"
-#
-#    source:
-#      type: SCHEMATIC
-#      file: example.schematic
-#
-#      paste-location: {world: "games", x: 0, y: 100, z: 0}
-#
-#    world: "games"
-#
-#    spawns:
-#      - {world: "games", x: 0, y: 100, z: 0, yaw: 0, pitch: 0}
-#      - {world: "games", x: 10, y: 100, z: 10, yaw: 0, pitch: 0}
-#      - {world: "games", x: -10, y: 100, z: -10, yaw: 0, pitch: 0}
-#
-#    bounds:
-#      pos1: {world: "games", x: 0, y: 100, z: 0}
-#      pos2: {world: "games", x: 0, y: 100, z: 0}
-#
-#    world-border:
-#      enabled: true
-#      shrink: true
-#      final-width: 25
-#      seconds: 60
-#
-#  example2:
-#    display-name: "A map copied and pasted from an existing world"
-#
-#    source:
-#      type: WORLD_COPY
-#      world: backup
-#
-#      copy-bounds:
-#        pos1: {world: "backup", x: 100, y: 100, z: 100}
-#        pos2: {world: "backup", x: -100, y: -100, z: -100}
-#
-#      paste-location: {world: "games", x: 0, y: 100, z: 0}
-#
-#    world: "games"
-#
-#    spawns:
-#      - {world: "games", x: 0, y: 100, z: 0, yaw: 0, pitch: 0}
-#      - {world: "games", x: 10, y: 100, z: 10, yaw: 0, pitch: 0}
-#      - {world: "games", x: -10, y: 100, z: -10, yaw: 0, pitch: 0}
-#
-#    bounds:
-#      pos1: {world: "games", x: 0, y: 100, z: 0}
-#      pos2: {world: "games", x: 0, y: 100, z: 0}
-#
-#    world-border:
-#      enabled: true
-#      shrink: true
-#      final-width: 25
-#      seconds: 60
+        - {world: "tdm-world", x: -540, y: 104, z: 139, yaw: 0.0, pitch: 0.0}
 
-  static:
-    display-name: "STATIC"
+  inferno:
 
-    source:
-      type: STATIC
-
-    world: "world"
+    world: "tdm-world"
 
     spawns:
-      - {world: "world", x: -530, y: 80, z: -589, yaw: 180.0, pitch: 0.0}
-      - {world: "world", x: -522, y: 80, z: -597, yaw: 90.0, pitch: 0.0}
-      - {world: "world", x: -530, y: 80, z: -605, yaw: 0.0, pitch: 0.0}
-      - {world: "world", x: -538, y: 80, z: -597, yaw: 0.0, pitch: 0.0}
+      - {world: "tdm-world", x: -22, y: -51, z: 11, yaw: -25.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -25, y: -48, z: 65, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -18, y: -48, z: 75, yaw: -10.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -15, y: -49, z: 104, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 6, y: -48, z: 118, yaw: -5.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 25, y: -49, z: 138, yaw: -50.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 61, y: -48, z: 132, yaw: 120.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 38, y: -49, z: 98, yaw: -115.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 57, y: -50, z: 72, yaw: -155.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 84, y: -51, z: 55, yaw: -155.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 104, y: -53, z: 42, yaw: 90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 126, y: -54, z: 37, yaw: 140.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 110, y: -52, z: 15, yaw: 125.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 76, y: -45, z: 34, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 56, y: -49, z: 4, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: 28, y: -45, z: 21, yaw: -90.0, pitch: 0.0f}
 
     bounds:
       pos1:
-        - {world: "world", x: -480, y: 113, z: -547, yaw: 0.0, pitch: 0.0}
+        - { world: "tdm-world", x: -30, y: -60, z: -4, yaw: 0.0, pitch: 0.0 }
       pos2:
-        - {world: "world", x: -580, y: 98, z: -647, yaw: 0.0, pitch: 45.0}
+        - { world: "tdm-world", x: 130, y: 5, z: 156, yaw: 0.0, pitch: 45.0 }
 
-    world-border:
-      enabled: true
-      shrink: true
-      final-width: 10
-      seconds: 60
+
+  nuke:
+
+    world: "tdm-world"
+
+    spawns:
+      - {world: "tdm-world", x: -434, y: -40, z: -486, yaw: 50.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -461, y: -40, z: -458, yaw: -165.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -463, y: -31, z: -488, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -472, y: -40, z: -489, yaw: 110.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -475, y: -40, z: -515, yaw: 50.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -475, y: -38, z: -545, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -463, y: -53, z: -525, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -440, y: -48, z: -524, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -445, y: -53, z: -490, yaw: 115.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -454, y: -47, z: -509, yaw: 55.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -502, y: -42, z: -504, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -480, y: -47, z: -502, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -476, y: -53, z: -508, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -451, y: -53, z: -503, yaw: 90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -462, y: -40, z: -512, yaw: -135.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -426, y: -40, z: -514, yaw: 180.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -461, y: -40, z: -423, yaw: 0.0, pitch: 0.0}
+      - {world: "tdm-world", x: -463, y: -40, z: -459, yaw: 0.0, pitch: 0.0}
+
+    bounds:
+      pos1:
+        - { world: "tdm-world", x: -403, y: -60, z: -380, yaw: 0.0, pitch: 0.0 }
+      pos2:
+        - { world: "tdm-world", x: -589, y: 61, z: -591, yaw: 0.0, pitch: 45.0 }
+
+  dust:
+
+    world: "tdm-world"
+
+    spawns:
+      - {world: "tdm-world", x: -22, y: -50, z: -51, yaw: -180.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -57, y: -50, z: -47, yaw: -155.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -71, y: -50, z: -78, yaw: 105.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -70, y: -50, z: -107, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -90, y: -50, z: -108, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -102, y: -50, z: -97, yaw: 0.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -115, y: -46, z: -115, yaw: -15.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -112, y: -47, z: -143, yaw: -180.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -98, y: -48, z: -157, yaw: -90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -80, y: -50, z: -145, yaw: -105.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -35, y: -49, z: -158, yaw: -85.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -16, y: -50, z: -161, yaw: 10.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -6, y: -48, z: -135, yaw: 30.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -19, y: -53, z: -96, yaw: 10.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -10, y: -48, z: -50, yaw: 90.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -41, y: -53, z: -115, yaw: 170.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -52, y: -51, z: -129, yaw: 175.0, pitch: 0.0f}
+      - {world: "tdm-world", x: -62, y: -49, z: -149, yaw: 90.0, pitch: 0.0f}
+      -
+    bounds:
+      pos1:
+        - { world: "tdm-world", x: 14, y: -60, z: -182, yaw: 0.0, pitch: 0.0 }
+      pos2:
+        - { world: "tdm-world", x: -141, y: -11, z: -33, yaw: 0.0, pitch: 45.0 }

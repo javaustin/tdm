@@ -9,6 +9,7 @@ import com.carrotguy69.tdm.game.items.managers.GunManager;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
 import com.carrotguy69.tdm.game.items.classes.GunItem;
 import com.carrotguy69.tdm.game.items.classes.MCItem;
+import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.objects.LocationUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.carrotguy69.tdm.TDM.defaultKit;
 import static com.carrotguy69.tdm.TDM.kitsYML;
 import static com.carrotguy69.tdm.TDM.plugin;
 
@@ -42,6 +44,12 @@ public class GenericItemRegistry {
         }
 
         for (String key : section.getKeys(false)) {
+            if (key.equalsIgnoreCase("default-kit")) {
+                defaultKit = kitsYML.getString("kits." + key);
+                Logger.info("Default kit is %s".formatted(defaultKit));
+                continue;
+            }
+
             Map<Integer, GenericItem> slotItemMap = new HashMap<>();
 
             List<Map<?, ?>> itemMapList = kitsYML.getMapList("kits." + key);

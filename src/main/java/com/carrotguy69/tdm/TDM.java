@@ -4,6 +4,8 @@ import com.carrotguy69.cxyz.events.custom.PublicChatEvent;
 import com.carrotguy69.cxyz.events.custom.VanishToggleEvent;
 import com.carrotguy69.cxyz.events.custom.base.Priority;
 import com.carrotguy69.cxyz.events.custom.service.EventService;
+import com.carrotguy69.cxyz.utils.NumberRange;
+import com.carrotguy69.tdm.cmd.game.Create;
 import com.carrotguy69.tdm.eventHandler.CoreChatHandler;
 import com.carrotguy69.tdm.eventHandler.VanishHandler;
 import com.carrotguy69.tdm.game.Game;
@@ -15,6 +17,7 @@ import com.carrotguy69.tdm.game.other.DamageSource;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.Startup;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,23 +30,35 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Random;
+import java.util.UUID;
 
 public final class TDM extends JavaPlugin implements Listener {
 
@@ -51,7 +66,7 @@ public final class TDM extends JavaPlugin implements Listener {
     TODO:
         - once you come up with at least 4 unique powerups then add them
         - glow players
-        - test map manager
+
     */
 
     public static JavaPlugin plugin;
@@ -71,6 +86,22 @@ public final class TDM extends JavaPlugin implements Listener {
     public static List<String> lobbyScoreboardLines;
 
     public static int respawnSeconds;
+
+    public static boolean autoJoinEnabled;
+    public static AutoJoinScope autoJoinScope;
+
+    public static String defaultKit;
+
+    public static List<UUID> noInteractionTicks = new ArrayList<>();
+
+    public static enum AutoJoinScope {
+        SERVER,
+        WORLD;
+        public static AutoJoinScope fromString(@Nullable String s) {
+            return s != null && s.toUpperCase().equals(SERVER.name()) ? SERVER : WORLD;
+        }
+    }
+
 
 
     @Override
@@ -93,6 +124,36 @@ public final class TDM extends JavaPlugin implements Listener {
         // Plugin shutdown logic
 
         Logger.info("See ya later!");
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        if (!autoJoinEnabled) {
+            return;
+        }
+
+        if (!(autoJoinScope == AutoJoinScope.SERVER || (autoJoinScope == AutoJoinScope.WORLD && e.getPlayer().getWorld().equals(GameMap.getMaps().getFirst().getWorld())))) {
+            return;
+        }
+
+        Game game;
+        try {
+            game = TDM.gameIDMap.values().stream().max(Comparator.comparingInt(g -> g.getPlayers().size())).stream().findFirst().orElseThrow();
+        }
+        catch (NoSuchElementException ex) {
+            game = new Game(
+                    Create.generateValidGameID(),
+                    gameMaps.size() - 1 > 0
+                            ? new ArrayList<>(gameMaps.values()).get(new Random().nextInt(0, gameMaps.size() - 1))
+                            : new ArrayList<>(gameMaps.values()).getFirst(),
+                    new NumberRange(2, 32),
+                    null
+            );
+        }
+
+        GamePlayer gamePlayer = new GamePlayer(e.getPlayer().getUniqueId());
+        gamePlayer.kit = game.defaultKit;
+        game.addPlayer(gamePlayer);
     }
 
 
@@ -289,15 +350,27 @@ public final class TDM extends JavaPlugin implements Listener {
 
         ItemStack hand = e.getPlayer().getInventory().getItemInMainHand();
 
+        if (noInteractionTicks.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
+        else {
+            noInteractionTicks.add(e.getPlayer().getUniqueId());
+
+            new BukkitRunnable() {public void run() {
+                noInteractionTicks.remove(e.getPlayer().getUniqueId());
+            }}.runTaskLater(this, 1);
+        }
+
         ConfigurationSection section = configYML.getConfigurationSection("game.click-actions");
 
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 try {
                     Material material = Material.valueOf(key.toUpperCase().replace("-", "_"));
-                    String actionTypeString = section.getString(key + ".click-type", "RIGHT_CLICK");
+                    String actionTypeString = section.getString(key + ".click-type", "ANY");
 
-                    if (!e.getAction().name().startsWith(actionTypeString.toUpperCase().replace("-", "_")) || material != hand.getType()) {
+                    if ((!e.getAction().name().startsWith(actionTypeString.toUpperCase().replace("-", "_")) && !actionTypeString.equalsIgnoreCase("ANY")) || material != hand.getType()) {
                         continue;
                     }
 
@@ -326,6 +399,62 @@ public final class TDM extends JavaPlugin implements Listener {
 
         GunManager.handleClick(e.getPlayer(), e.getAction());
     }
+
+    @EventHandler
+    public void onInventory(InventoryClickEvent e) {
+        Player p = (Player) e.getWhoClicked();
+
+        Game game = Game.getByPlayer(p);
+
+        if (game == null) {
+            return;
+        }
+
+        if (game.getGameState() == GameState.WAITING && p.getGameMode() != GameMode.CREATIVE) {
+            e.setCancelled(true);
+            return;
+        }
+
+    }
+
+    @EventHandler
+    public void onInventory(InventoryDragEvent e) {
+        Player p = (Player) e.getWhoClicked();
+
+        Game game = Game.getByPlayer(p);
+
+        if (game == null) {
+            return;
+        }
+
+        if (game.getGameState() == GameState.WAITING && p.getGameMode() != GameMode.CREATIVE) {
+            e.setCancelled(true);
+            return;
+        }
+
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent e) {
+        Player p = e.getPlayer();
+
+        Game game = Game.getByPlayer(p);
+
+        if (game == null) {
+            return;
+        }
+
+        if (game.getGameState() == GameState.WAITING && p.getGameMode() != GameMode.CREATIVE) {
+            e.setCancelled(true);
+            noInteractionTicks.add(e.getPlayer().getUniqueId());
+
+            new BukkitRunnable() {public void run() {
+                noInteractionTicks.remove(e.getPlayer().getUniqueId());
+            }}.runTaskLater(this, 1);
+            return;
+        }
+    }
+
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent e) {

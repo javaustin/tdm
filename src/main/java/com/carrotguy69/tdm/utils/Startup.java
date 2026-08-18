@@ -7,6 +7,8 @@ import com.carrotguy69.tdm.cmd.Test;
 import com.carrotguy69.tdm.cmd.game._GameSupercommand;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.map.GameMap;
+import com.carrotguy69.tdm.utils.objects.GlowUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
@@ -58,9 +60,12 @@ public class Startup {
     public static void loadConstants() {
 
         // Load maps to memory
-        for (GameMap map : GameMap.loadMaps()) {
+        for (GameMap map : GameMap.getMaps()) {
             gameMaps.put(map.getID(), map);
         }
+
+        autoJoinEnabled = configYML.getBoolean("auto-join.enabled");
+        autoJoinScope = AutoJoinScope.fromString(configYML.getString("auto-join.scope"));
 
         scoreboardsEnabled = configYML.getBoolean("scoreboards.enabled");
         gameScoreboardLines = configYML.getStringList("scoreboards.game");
@@ -85,6 +90,8 @@ public class Startup {
 
             TDM.lobbyMap = lobbyMap;
         }
+
+        GlowUtils.SCOREBOARD = Bukkit.getScoreboardManager().getMainScoreboard();
 
 
         return;
