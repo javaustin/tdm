@@ -30,7 +30,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -66,6 +65,8 @@ public final class TDM extends JavaPlugin implements Listener {
     TODO:
         - once you come up with at least 4 unique powerups then add them
         - glow players
+        - when a player wins due to a team forfeiting, the loser team color resolves to the only team still existing (the winner team).
+            tldr: so it looks like &c0 - &c0
 
     */
 
@@ -370,7 +371,7 @@ public final class TDM extends JavaPlugin implements Listener {
                     Material material = Material.valueOf(key.toUpperCase().replace("-", "_"));
                     String actionTypeString = section.getString(key + ".click-type", "ANY");
 
-                    if ((!e.getAction().name().startsWith(actionTypeString.toUpperCase().replace("-", "_")) && !actionTypeString.equalsIgnoreCase("ANY")) || material != hand.getType()) {
+                    if (!e.getAction().name().startsWith(actionTypeString.toUpperCase().replace("-", "_")) && !actionTypeString.equalsIgnoreCase("ANY") || material != hand.getType()) {
                         continue;
                     }
 

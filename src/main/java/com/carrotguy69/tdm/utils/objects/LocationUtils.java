@@ -80,13 +80,27 @@ public class LocationUtils {
         }
 
         for (GamePlayer enemy : enemies) {
-            if (gp.getBukkitPlayer() != null && enemy != gp && enemy != null && gp.getBukkitPlayer().canSee(enemy.getBukkitPlayer()) && enemy.getBukkitPlayer().getWorld() == gp.getBukkitPlayer().getWorld()) {
-                double distanceSquared = gp.getBukkitPlayer().getLocation().distanceSquared(enemy.getBukkitPlayer().getLocation());
-                if (distanceSquared < nearestDistanceSquared) {
-                    nearestPlayer = enemy.getBukkitPlayer();
-                    nearestDistanceSquared = distanceSquared;
-                }
+            if (gp == null)
+                continue;
+
+            if (gp.getBukkitPlayer() == null)
+                continue;
+
+            if (enemy == null)
+                continue;
+
+            if (enemy.getBukkitPlayer() == null)
+                continue;
+
+            if (!(gp.getBukkitPlayer().canSee(enemy.getBukkitPlayer()) || enemy.getBukkitPlayer().getWorld() == gp.getBukkitPlayer().getWorld()))
+                continue;
+
+            double distanceSquared = gp.getBukkitPlayer().getLocation().distanceSquared(enemy.getBukkitPlayer().getLocation());
+            if (distanceSquared < nearestDistanceSquared) {
+                nearestPlayer = enemy.getBukkitPlayer();
+                nearestDistanceSquared = distanceSquared;
             }
+
         }
 
         return nearestPlayer != null ? nearestPlayer.getLocation() : null;

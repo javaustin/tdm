@@ -6,7 +6,6 @@ com/carrotguy69/tdm/game/items/classes/GunItem$2.class
 com/carrotguy69/tdm/game/items/classes/CustomItem.class
 com/carrotguy69/tdm/cmd/Print.class
 com/carrotguy69/tdm/game/items/classes/MCItem.class
-com/carrotguy69/tdm/game/Game$9$1.class
 com/carrotguy69/tdm/cmd/game/Kit.class
 com/carrotguy69/tdm/game/items/classes/GunItem.class
 com/carrotguy69/tdm/game/items/managers/CustomItemManager.class
@@ -18,6 +17,7 @@ com/carrotguy69/tdm/cmd/game/_GameSupercommand.class
 com/carrotguy69/tdm/game/Game$9.class
 com/carrotguy69/tdm/cmd/game/Info.class
 com/carrotguy69/tdm/game/items/GenericItem$Type.class
+com/carrotguy69/tdm/game/Game$10$1.class
 com/carrotguy69/tdm/utils/objects/LocationUtils.class
 com/carrotguy69/tdm/utils/objects/GlowUtils.class
 com/carrotguy69/tdm/game/Game$1.class
@@ -31,6 +31,7 @@ com/carrotguy69/tdm/cmd/game/Ready.class
 com/carrotguy69/tdm/game/items/managers/GunManager.class
 com/carrotguy69/tdm/cmd/game/List.class
 com/carrotguy69/tdm/game/Game$8.class
+com/carrotguy69/tdm/game/Game$11.class
 com/carrotguy69/tdm/cmd/game/Setting.class
 com/carrotguy69/tdm/game/Game$5.class
 com/carrotguy69/tdm/game/items/classes/CustomItem$Type.class

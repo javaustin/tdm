@@ -474,10 +474,6 @@ public class GunItem implements GenericItem {
                     }
                 }
             }
-
-//            if (!particleLocation.getBlock().isPassable() && particleLocation.getBlock().isCollidable()) {
-//                return;
-//            }
         }
     }
 

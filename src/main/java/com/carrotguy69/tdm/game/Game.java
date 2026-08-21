@@ -289,6 +289,15 @@ public class Game {
 
         lobbyMap.getWorld().setSpawnLocation(lobbyMap.getSpawns().getFirst());
 
+        taskIDs.add(
+                new BukkitRunnable() {public void run() {
+                    if (gameState == GameState.WAITING) {
+                        updateScoreboard();
+                    }
+
+                }}.runTaskTimer(plugin, 20, 20).getTaskId()
+        );
+
         if (isPlayable()) {
             tryLobbyCountdown();
         }
@@ -312,6 +321,17 @@ public class Game {
         Player p = gp.getBukkitPlayer();
 
         p.getInventory().clear();
+
+        GameStat tdmLifetimeKills = GameStat.getStat(gp.getUUID(), "tdm-lifetime-kills");
+        GameStat tdmLifetimeWins = GameStat.getStat(gp.getUUID(), "tdm-lifetime-wins");
+
+        if (tdmLifetimeKills == null) {
+            GameStat.setStat(gp.getUUID(), "tdm-lifetime-kills", "0").sync();
+        }
+
+        if (tdmLifetimeWins == null) {
+            GameStat.setStat(gp.getUUID(), "tdm-lifetime-wins", "0").sync();
+        }
 
         gp.setTemporaryStat("kills", 0);
 
@@ -738,7 +758,6 @@ public class Game {
         if (counting) {
             return;
         }
-
 
         int id = new BukkitRunnable() {public void run() {
             updateScoreboard();
@@ -1293,7 +1312,7 @@ public class Game {
     }
 
     public GameTeam getNonLeadingTeam() {
-        return teams.stream().sorted(Comparator.comparingDouble(gt -> gt.getStat("kills", 0))).toList().getFirst();
+        return teams.stream().filter(gt -> !(gt == getLeadingTeam())).findAny().orElse(null);
     }
 
     private void replenish(GamePlayer gp) {

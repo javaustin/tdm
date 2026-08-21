@@ -20,16 +20,16 @@ game:
   click-actions:
     # Execute commands upon right or left-clicking with an item in the hand.
     #    item: a Minecraft item
-    #    click-type: [RIGHT_CLICK, LEFT_CLICK]
+    #    click-type: [RIGHT_CLICK, LEFT_CLICK, ANY]
     #    actions: Command actions executed from the context of the clicking player.
 
     red-wool:
-      click-type: ANY
+      click-type: RIGHT_CLICK
       actions:
         - sudo {player} tdm team join red -s
 
     blue-wool:
-      click-type: ANY
+      click-type: RIGHT_CLICK
       actions:
         - sudo {player} tdm team join blue -s
 
@@ -46,7 +46,7 @@ game:
         - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"white\"}]]] 1"
 
     chest:
-      click-type: ANY
+      click-type: RIGHT_CLICK
       actions:
         - pa open kit-selector {player}
 
