@@ -108,6 +108,8 @@ public enum TDMMessageKey {
 
     RESPAWN_MESSAGE("game.respawn.message"),
 
+    POWER_UP_PICKUP("game.power-up.pickup"),
+
     TOP_KILLERS_LIST_ENTRY_FORMAT("game.recaps.top-killers-numbered-list.entry-format"),
     TOP_KILLERS_LIST_DELIMITER("game.recaps.top-killers-numbered-list.separator"),
     TOP_KILLERS_LIST_MAX_ENTRIES("game.recaps.top-killers-numbered-list.max-entries"),

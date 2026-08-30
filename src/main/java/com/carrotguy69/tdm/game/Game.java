@@ -16,6 +16,8 @@ import com.carrotguy69.tdm.game.items.GenericItem;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
 import com.carrotguy69.tdm.game.items.classes.GunItem;
+import com.carrotguy69.tdm.game.items.powerups.PowerUp;
+import com.carrotguy69.tdm.game.items.powerups.PowerUpPickup;
 import com.carrotguy69.tdm.game.map.GameMap;
 import com.carrotguy69.tdm.game.other.DamageSource;
 import com.carrotguy69.tdm.game.other.Durations;
@@ -35,6 +37,8 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandException;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -42,6 +46,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -49,8 +54,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -293,6 +298,9 @@ public class Game {
                 new BukkitRunnable() {public void run() {
                     if (gameState == GameState.WAITING) {
                         updateScoreboard();
+                    }
+                    else {
+                        this.cancel();
                     }
 
                 }}.runTaskTimer(plugin, 20, 20).getTaskId()
@@ -868,13 +876,8 @@ public class Game {
     }
 
     private void prep() {
-        /*
-        Prepare the game for a start
-           - cleaning and locking down teams
-           - spawning teams/players in their respective spawnpoints
-           - updating game state
-           - start the countdown
-        */
+
+
 
         originalPlayersSize = this.players.size();
         originalTeamsSize = this.teams.size();
@@ -909,6 +912,18 @@ public class Game {
         runConfigCommands(configYML.getStringList("game.command-actions.on-prep"), commonMap);
 
         tryGameCountdown();
+
+        // To remove pickups from previous games that failed to delete.
+        for (Location powerUpSpawn : map.getPowerUpSpawns()) {
+            Logger.log("Scanning at power up spawn: " + powerUpSpawn.toString());
+            powerUpSpawn.getWorld().loadChunk(powerUpSpawn.getChunk());
+            for (Entity entity : powerUpSpawn.getNearbyEntities(5, 5, 5)) {
+                if (entity.getType() == EntityType.ARMOR_STAND) {
+                    Logger.log("Found armor stand at " + entity.getLocation());
+                    entity.remove();
+                }
+            }
+        }
     }
 
     private void recalcTeamIndexes() {
@@ -1060,19 +1075,6 @@ public class Game {
 
 
         for (GamePlayer gp : this.getPlayers()) {
-            gp.setTemporaryStat("kills", 0);
-
-            GameStat tdmLifetimeKills = GameStat.getStat(gp.getUUID(), "tdm-lifetime-kills");
-            GameStat tdmLifetimeWins = GameStat.getStat(gp.getUUID(), "tdm-lifetime-wins");
-
-            if (tdmLifetimeKills == null) {
-                GameStat.setStat(gp.getUUID(), "tdm-lifetime-kills", "0").sync();
-            }
-
-            if (tdmLifetimeWins == null) {
-                GameStat.setStat(gp.getUUID(), "tdm-lifetime-wins", "0").sync();
-            }
-
             // command actions for on-start
             Map<String, Object> newCommonMap = new HashMap<>();
             newCommonMap.putAll(commonMap);
@@ -1080,6 +1082,33 @@ public class Game {
             runConfigCommands(configYML.getStringList("game.command-actions.on-start"), newCommonMap);
 
         }
+
+        long despawnTicks = configYML.getLong("game.power-ups.despawn-ticks");
+        int maxAmount = configYML.getInt("game.power-ups.max");
+
+        spawnPowerUps(maxAmount, despawnTicks);
+
+        taskIDs.add(
+                new BukkitRunnable() {public void run() {
+                    if (gameState != GameState.ACTIVE) {
+                        return;
+                    }
+
+                    PowerUpPickup toDespawn = null;
+
+                    for (PowerUpPickup pickup : PowerUpPickup.activePickupLocations) {
+                        for (Player nearby : pickup.getLocation().getNearbyPlayers(1)) {
+                            pickup.applyTo(getPlayer(nearby));
+                            toDespawn = pickup;
+                            break;
+                        }
+                    }
+
+                    if (toDespawn != null)
+                        toDespawn.despawn();
+
+                }}.runTaskTimer(plugin, 0L, 2L).getTaskId()
+        );
 
         // Anything in this task runs every second
         taskIDs.add(
@@ -1417,11 +1446,12 @@ public class Game {
     }
 
     public void win(GameTeam winningTeam) {
-
         gameState = GameState.ENDING;
         cancelAllTasks();
 
         invulEnabled = true;
+
+        PowerUpPickup.despawnAll();
 
         // Send victory title for winners
         List<Player> winnerBukkitPlayers = winningTeam.getPlayers().stream().map(GamePlayer::getBukkitPlayer).toList();
@@ -1696,7 +1726,7 @@ public class Game {
     public boolean damageWithGun(Player victim, Player attacker, double damage) {
         // return true if we determine the damage should be applied
 
-        if (victim.getGameMode() != defaultGamemode /*|| attacker.getGameMode() != defaultGamemode*/)
+        if (victim.getGameMode() != defaultGamemode)
             return false;
 
         Game game = Game.getByPlayer(victim);
@@ -1727,7 +1757,7 @@ public class Game {
 
         setLastDamageSource(gp, new DamageSource(shooter, DamageSource.Reason.PROJECTILE)); // Set our own damage source map.
 
-        victim.damage(damage); // Use an arbitrary (but consistent) bukkit damage type to represent damaging with a gun.
+        victim.damage(damage);
         return true;
     }
 
@@ -1739,6 +1769,37 @@ public class Game {
         }
 
         return null;
+    }
+
+    public void spawnPowerUps(int amount, long despawnTicks) {
+        List<PowerUp> powerUps = new ArrayList<>(GenericItemRegistry.powerUps.values());
+        List<Location> powerUpSpawns = map.getPowerUpSpawns();
+
+        amount = Math.min(amount, Math.min(map.getPowerUpSpawns().size(), powerUps.size()));
+
+        if (powerUpSpawns.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < amount; i++) {
+            PowerUp powerUp = powerUps.get(i);
+
+            Location spawnLocation = powerUpSpawns.size() - 1 > 0 ? powerUpSpawns.get(random.nextInt(0, powerUpSpawns.size() - 1)) : powerUpSpawns.getFirst();
+
+            PowerUpPickup pickup = new PowerUpPickup(powerUp.getOriginalItem(), spawnLocation);
+            pickup.spawn();
+
+            taskIDs.add(new BukkitRunnable() {public void run() {
+                if (gameState != GameState.ACTIVE) {
+                    return;
+                }
+
+                pickup.despawn();
+
+                spawnPowerUps(1, despawnTicks);
+            }}.runTaskLater(plugin, despawnTicks).getTaskId());
+        }
+
     }
 
     public void freeze(GamePlayer admin) {

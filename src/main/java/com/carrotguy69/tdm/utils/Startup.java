@@ -6,6 +6,7 @@ import com.carrotguy69.tdm.cmd.Print;
 import com.carrotguy69.tdm.cmd.Test;
 import com.carrotguy69.tdm.cmd.game._GameSupercommand;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
+import com.carrotguy69.tdm.game.items.powerups.PowerUpLoader;
 import com.carrotguy69.tdm.game.map.GameMap;
 import com.carrotguy69.tdm.utils.objects.GlowUtils;
 import org.bukkit.Bukkit;
@@ -78,6 +79,8 @@ public class Startup {
         GenericItemRegistry.loadGuns();
 
         GenericItemRegistry.loadKits();
+
+        PowerUpLoader.load();
 
 
         if (gameMaps.keySet().stream().noneMatch(id -> id.equalsIgnoreCase("lobby"))) {

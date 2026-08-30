@@ -42,16 +42,18 @@ public class GameMap {
     private final String name;
 //    private final MapSource source;
     private final List<Location> spawns;
+    private final List<Location> powerUpSpawns;
     private final BoundingBox bounds;
     private final World world;
     private final boolean isBorderEnabled;
     public boolean isInUse;
 
-    private GameMap(String id, String name, /*MapSource source,*/ List<Location> spawns, BoundingBox bounds, World world, boolean isBorderEnabled) {
+    private GameMap(String id, String name, /*MapSource source,*/ List<Location> spawns, List<Location> powerUpSpawns, BoundingBox bounds, World world, boolean isBorderEnabled) {
         this.id = id;
         this.name = name;
 //        this.source = source;
         this.spawns = spawns;
+        this.powerUpSpawns = powerUpSpawns;
         this.bounds = bounds;
         this.world = world;
         this.isBorderEnabled = isBorderEnabled;
@@ -72,6 +74,9 @@ public class GameMap {
 
     public List<Location> getSpawns() {
         return spawns;
+    }
+    public List<Location> getPowerUpSpawns() {
+        return powerUpSpawns;
     }
 
     public BoundingBox getBounds() {
@@ -205,6 +210,7 @@ public class GameMap {
 
             // Get spawns
             List<Location> spawns = LocationUtils.getLocationsFromYML(section.getMapList(mapID + ".spawns"));
+            List<Location> powerUpSpawns = LocationUtils.getLocationsFromYML(section.getMapList(mapID + ".powerup-spawns"));
 
             Location boundsPos1 = LocationUtils.getLocationFromYML(section.getMapList(mapID + ".bounds.pos1"));
             Location boundsPos2 = LocationUtils.getLocationFromYML(section.getMapList(mapID + ".bounds.pos2"));
@@ -275,7 +281,7 @@ public class GameMap {
 
             boolean enabled = section.getBoolean(mapID + ".world-border.enabled", false);
 
-            GameMap map = new GameMap(mapID, displayName, /*source,*/ spawns, mapBounds, world, enabled);
+            GameMap map = new GameMap(mapID, displayName, /*source,*/ spawns, powerUpSpawns, mapBounds, world, enabled);
 
             results.add(map);
         }

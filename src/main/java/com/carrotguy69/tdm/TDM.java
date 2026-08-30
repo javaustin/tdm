@@ -11,7 +11,9 @@ import com.carrotguy69.tdm.eventHandler.VanishHandler;
 import com.carrotguy69.tdm.game.Game;
 import com.carrotguy69.tdm.game.GamePlayer;
 import com.carrotguy69.tdm.game.GameState;
+import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.managers.GunManager;
+import com.carrotguy69.tdm.game.items.powerups.PowerUp;
 import com.carrotguy69.tdm.game.map.GameMap;
 import com.carrotguy69.tdm.game.other.DamageSource;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
@@ -51,6 +53,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -63,10 +66,28 @@ public final class TDM extends JavaPlugin implements Listener {
 
     /*
     TODO:
-        - once you come up with at least 4 unique powerups then add them
+        - make sure same team players cant damage eachother
+            - Powerup(location, [consumer] action)
+            ideas:
+            - explosive arrow (creates explosion and changes blocks to nether and fire [temporarily, make sure to restore even if server shuts down])
+            - jump pack (slime block, launches player into the air in a direction to escape or trickshot)
+            - smoke grenade (blinds players within radius and puts particles)
+            - full health pickup (custom splash potion that heals all teammates (and self) in radius)
+            - a wither/blaze/flying thing that attacks enemy players (easy to kill but flying)
+            - temporary (5 second (or until 20 damage is dealt OR explosion) physical shield item that blocks all attacks - use an action bar timer
+            - grappling hook
+            - ortify (slowness 2 and resistance 2 effects) - use an armor icon and activate thru right click
+            - homing missle (dont need to hold right click) take 2 seconds to lock and then shoot an instakill firework at them
+            - fish bomb (spawns a lot salmon/carp/whatever they are [remove after 5 seconds])
+            - simple ammo pickup
+            - team buff (grant all players gapple effects)
+            - orbital strike/carpet bomb (dont know how to summon) - mark the circular area with red particles, and blow everything up (physical tnt should drop and ignite as soon as it hits the floor
+            - explosions:
+            - throw blocks into the air
+            - can set (only completely solid) blocks to be corrupter or light the tops on fire (make sure fire spread is off)
+            - we should use the smokey particles (whatever they were) from the last TDM minigame for explosions
         - glow players
-        - when a player wins due to a team forfeiting, the loser team color resolves to the only team still existing (the winner team).
-            tldr: so it looks like &c0 - &c0
+        - since gun data is based on the player, you shouldnt be able to drop your gun to another player
 
     */
 
@@ -95,7 +116,7 @@ public final class TDM extends JavaPlugin implements Listener {
 
     public static List<UUID> noInteractionTicks = new ArrayList<>();
 
-    public static enum AutoJoinScope {
+    public enum AutoJoinScope {
         SERVER,
         WORLD;
         public static AutoJoinScope fromString(@Nullable String s) {
@@ -177,6 +198,7 @@ public final class TDM extends JavaPlugin implements Listener {
             return;
         }
 
+
         Game game = Game.getByPlayer(p);
 
         if (game == null) {
@@ -218,6 +240,7 @@ public final class TDM extends JavaPlugin implements Listener {
             return;
         }
 
+
         Entity attackerEntity = e.getDamager();
         Player attacker = null;
         DamageSource.Reason reason = null;
@@ -257,6 +280,10 @@ public final class TDM extends JavaPlugin implements Listener {
             e.setCancelled(true);
         }
 
+        else if (attackerGP.getTeam().equals(gp.getTeam())) {
+            e.setCancelled(true);
+        }
+
         else {
             DamageSource source = new DamageSource(attackerGP, reason);
             game.setLastDamageSource(gp, source);
@@ -267,6 +294,7 @@ public final class TDM extends JavaPlugin implements Listener {
             double damageDealt = gp.getTemporaryStat("damage-dealt", 0.0);
             attackerGP.setTemporaryStat("damage-dealt", damageDealt + e.getFinalDamage());
         }
+
 
         double hp = p.getHealth() - e.getFinalDamage();
         if (hp <= 0) {
@@ -290,10 +318,7 @@ public final class TDM extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPearl(PlayerTeleportEvent e) {
-
-        // Easiest way to cancel pearl damage is to cancel the pearl event and teleport the player ourselves (and play the pearl sound).
-
+    public void onDeath(PlayerDeathEvent e) {
         Player p = e.getPlayer();
 
         Game game = Game.getByPlayer(p);
@@ -302,27 +327,8 @@ public final class TDM extends JavaPlugin implements Listener {
             return;
         }
 
-        if (game.getGameState() != GameState.ACTIVE) {
-            return;
-        }
-
-        if (e.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-            p.teleport(e.getTo());
-            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1.0f, 1.0f);
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onDeath(PlayerDeathEvent e) {
-        Game game = Game.getByPlayer(e.getPlayer());
-
-        if (game == null) {
-            return;
-        }
-
-        e.getPlayer().teleport(game.getGameMap().getSpawns().getFirst());
-        e.getPlayer().setRespawnLocation(game.getGameMap().getSpawns().getFirst());
+        p.teleport(game.getGameMap().getSpawns().getFirst());
+        p.setRespawnLocation(game.getGameMap().getSpawns().getFirst());
     }
 
     @EventHandler
@@ -343,23 +349,31 @@ public final class TDM extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        Game game = Game.getByPlayer(e.getPlayer());
+        Player p = e.getPlayer();
+
+        // PowerUp hook
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
+
+        Game game = Game.getByPlayer(p);
 
         if (game == null) {
             return;
         }
 
-        ItemStack hand = e.getPlayer().getInventory().getItemInMainHand();
+        ItemStack hand = p.getInventory().getItemInMainHand();
 
-        if (noInteractionTicks.contains(e.getPlayer().getUniqueId())) {
+        if (noInteractionTicks.contains(p.getUniqueId())) {
             return;
         }
 
         else {
-            noInteractionTicks.add(e.getPlayer().getUniqueId());
+            noInteractionTicks.add(p.getUniqueId());
 
             new BukkitRunnable() {public void run() {
-                noInteractionTicks.remove(e.getPlayer().getUniqueId());
+                noInteractionTicks.remove(p.getUniqueId());
             }}.runTaskLater(this, 1);
         }
 
@@ -377,7 +391,7 @@ public final class TDM extends JavaPlugin implements Listener {
 
                     List<String> actions = section.getStringList(key + ".actions");
 
-                    Game.runConfigCommands(actions, MapFormatters.gamePlayerFormatter(game.getPlayer(e.getPlayer())));
+                    Game.runConfigCommands(actions, MapFormatters.gamePlayerFormatter(game.getPlayer(p)));
                 }
                 catch (IllegalArgumentException ex) {
                     Logger.log("Failed to run click action command because %s is not a valid item!".formatted(key));
@@ -398,12 +412,13 @@ public final class TDM extends JavaPlugin implements Listener {
         }
 
 
-        GunManager.handleClick(e.getPlayer(), e.getAction());
+        GunManager.handleClick(p, e.getAction());
     }
 
     @EventHandler
     public void onInventory(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
+
 
         Game game = Game.getByPlayer(p);
 
@@ -439,13 +454,14 @@ public final class TDM extends JavaPlugin implements Listener {
     public void onDrop(PlayerDropItemEvent e) {
         Player p = e.getPlayer();
 
+
         Game game = Game.getByPlayer(p);
 
         if (game == null) {
             return;
         }
 
-        if (game.getGameState() == GameState.WAITING && p.getGameMode() != GameMode.CREATIVE) {
+        if (p.getGameMode() != GameMode.CREATIVE) {
             e.setCancelled(true);
             noInteractionTicks.add(e.getPlayer().getUniqueId());
 
@@ -459,15 +475,23 @@ public final class TDM extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent e) {
+
         Projectile projectile = e.getEntity();
 
-        if (!(projectile instanceof Arrow arrow)) {
+        if (projectile.getShooter() == null || !(projectile.getShooter() instanceof Player p)) {
             return;
         }
 
-        if (arrow.getShooter() == null || !(arrow.getShooter() instanceof Player p)) {
+        // If a player is found in ANY Bukkit event, be sure to respect any possible PowerUp hooks.
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
+
+        if (!(projectile instanceof Arrow)) {
             return;
         }
+
 
         Game game = Game.getByPlayer(p);
 

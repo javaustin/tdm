@@ -39,6 +39,7 @@ public class MapFormatters {
             Logger.log("game player kit for %s is null".formatted(gp.getNetworkPlayer().getUsername()));
         }
         commonMap.put("player-kit", gp.kit != null ? gp.kit.toUpperCase() : "");
+        commonMap.put("player-kit-display", gp.kit != null ? gp.kit.toUpperCase() : "N/A");
 
         for (Map.Entry<String, Double> entry : gp.getTemporaryStat().entrySet()) {
             String key = entry.getKey();

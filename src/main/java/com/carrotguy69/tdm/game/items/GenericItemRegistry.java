@@ -9,8 +9,10 @@ import com.carrotguy69.tdm.game.items.managers.GunManager;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
 import com.carrotguy69.tdm.game.items.classes.GunItem;
 import com.carrotguy69.tdm.game.items.classes.MCItem;
-import com.carrotguy69.tdm.utils.Logger;
+import com.carrotguy69.tdm.game.items.powerups.PowerUp;
 import com.carrotguy69.tdm.utils.objects.LocationUtils;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.carrotguy69.tdm.TDM.defaultKit;
 import static com.carrotguy69.tdm.TDM.kitsYML;
@@ -36,6 +39,9 @@ public class GenericItemRegistry {
     public static Map<String, GenericItem> allItems = new HashMap<>();
     public static Map<String, Map<Integer, GenericItem>> kits = new HashMap<>();
 
+    public static Map<String, PowerUp> powerUps = new HashMap<>();
+    public static Multimap<UUID, PowerUp> powerUpsByPlayer = ArrayListMultimap.create();
+
     public static void loadKits() {
         ConfigurationSection section = kitsYML.getConfigurationSection("kits");
 
@@ -46,7 +52,6 @@ public class GenericItemRegistry {
         for (String key : section.getKeys(false)) {
             if (key.equalsIgnoreCase("default-kit")) {
                 defaultKit = kitsYML.getString("kits." + key);
-                Logger.info("Default kit is %s".formatted(defaultKit));
                 continue;
             }
 

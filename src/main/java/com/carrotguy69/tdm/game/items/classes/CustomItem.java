@@ -24,8 +24,8 @@ public class CustomItem implements GenericItem {
 
     public enum Type {
         AMMO,
-        GRENADE,
-        PLAYER_TRACKER
+        PLAYER_TRACKER,
+        POWER_UP
     }
 
     private final String id;
@@ -113,6 +113,7 @@ public class CustomItem implements GenericItem {
             return itemStack;
         }
 
+
         meta.getPersistentDataContainer().set(
                 GenericItemRegistry.customTypeKey,
                 PersistentDataType.STRING,
@@ -142,10 +143,12 @@ public class CustomItem implements GenericItem {
                 Enchantment mcEnchantment = registry.get(NamespacedKey.minecraft(enchant.id()));
 
                 if (mcEnchantment == null) {
+                    meta.setEnchantmentGlintOverride(Boolean.TRUE);
                     continue;
                 }
 
-                meta.addEnchant(mcEnchantment, enchant.level(), true);            }
+                meta.addEnchant(mcEnchantment, enchant.level(), true);
+            }
         }
 
         itemStack.setItemMeta(meta);

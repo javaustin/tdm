@@ -36,6 +36,15 @@ maps:
       - {world: "tdm-world", x: 56, y: -49, z: 4, yaw: 0.0, pitch: 0.0f}
       - {world: "tdm-world", x: 28, y: -45, z: 21, yaw: -90.0, pitch: 0.0f}
 
+    powerup-spawns:
+      - { world: "tdm-world", x: -0, y: -48, z: 74, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -17, y: -49, z: 27, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: 45, y: -50, z: 20, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: 93, y: -52, z: 33, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: 56, y: -49, z: 85, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -9, y: -49, z: 118, yaw: 0.0f, pitch: 0.0f }
+
+
     bounds:
       pos1:
         - { world: "tdm-world", x: -30, y: -60, z: -4, yaw: 0.0, pitch: 0.0 }
@@ -67,6 +76,14 @@ maps:
       - {world: "tdm-world", x: -461, y: -40, z: -423, yaw: 0.0, pitch: 0.0}
       - {world: "tdm-world", x: -463, y: -40, z: -459, yaw: 0.0, pitch: 0.0}
 
+    powerup-spawns:
+      - { world: "tdm-world", x: -461, y: -53, z: -502, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -445, y: -48, z: -505, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -485, y: -40, z: -513, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -437, y: -40, z: -508, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -461, y: -40, z: -461, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -484, y: -47, z: -502, yaw: 0.0f, pitch: 0.0f }
+
     bounds:
       pos1:
         - { world: "tdm-world", x: -403, y: -60, z: -380, yaw: 0.0, pitch: 0.0 }
@@ -96,7 +113,15 @@ maps:
       - {world: "tdm-world", x: -41, y: -53, z: -115, yaw: 170.0, pitch: 0.0f}
       - {world: "tdm-world", x: -52, y: -51, z: -129, yaw: 175.0, pitch: 0.0f}
       - {world: "tdm-world", x: -62, y: -49, z: -149, yaw: 90.0, pitch: 0.0f}
-      -
+
+    powerup-spawns:
+      - { world: "tdm-world", x: -20, y: -46, z: -82, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -44, y: -50, z: -50, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -67, y: -50, z: -72, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -111, y: -50, z: -87, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -61, y: -49, z: -149, yaw: 0.0f, pitch: 0.0f }
+      - { world: "tdm-world", x: -13, y: -51, z: -121, yaw: 0.0f, pitch: 0.0f }
+
     bounds:
       pos1:
         - { world: "tdm-world", x: 14, y: -60, z: -182, yaw: 0.0, pitch: 0.0 }

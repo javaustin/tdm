@@ -34,7 +34,7 @@ lobby:
         max-entries: 9999
 
   info:
-    all-ready: "&eAll players have readied up! Skiping countdown."
+    all-ready: "&aAll players have readied up! Skipping countdown."
     start-countdown: "&eGame starting in &6{count} &eseconds." # + {count}
     start-cancel: "&eStart cancelled! There are not enough players to start a game." # N/A
 
@@ -125,6 +125,9 @@ game:
       success: "&eReloaded!"
       background-units: "&7█"
       progress-units: "&e█"
+
+  power-up:
+    pickup: "&eYou picked up a((n)) {display-name}!"
 
 
   # N/A

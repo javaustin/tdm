@@ -110,6 +110,7 @@ public class MCItem implements GenericItem {
                 Enchantment mcEnchantment = registry.get(NamespacedKey.minecraft(enchant.id()));
 
                 if (mcEnchantment == null) {
+                    meta.setEnchantmentGlintOverride(Boolean.TRUE);
                     continue;
                 }
 

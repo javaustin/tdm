@@ -17,11 +17,18 @@ game:
     # Default gamemode used for active players (spectators excluded).
     default-gamemode: adventure
 
+  power-ups:
+    # How long should a PowerUp stay spawned before being removed or replaced? (1 second = 20 ticks)
+    despawn-ticks: 1500
+
+    # What should be the maximum amount of PowerUp(s) on the map at once?
+    max: 3
+
   click-actions:
     # Execute commands upon right or left-clicking with an item in the hand.
     #    item: a Minecraft item
     #    click-type: [RIGHT_CLICK, LEFT_CLICK, ANY]
-    #    actions: Command actions executed from the context of the clicking player.
+    #    actions: Command actions executed from the console.
 
     red-wool:
       click-type: RIGHT_CLICK
@@ -36,13 +43,13 @@ game:
     gray-dye:
       click-type: RIGHT_CLICK
       actions:
+        - sudo {player} tdm ready true
         - "minecraft:item replace entity {player} hotbar.7 with minecraft:lime_dye[minecraft:custom_name=[{\"text\":\"Ready\",\"italic\":false,\"color\":\"green\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"yellow\"}]]] 1"
-        - sudo {player} tdm ready
 
     lime-dye:
       click-type: RIGHT_CLICK
       actions:
-        - sudo {player} tdm ready
+        - sudo {player} tdm ready false
         - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"white\"}]]] 1"
 
     chest:
@@ -58,8 +65,6 @@ game:
     on-lobby:
       # Available placeholders: {player}, {game}
       # NOT A LOOP! Runs for individual players in the lobby if they newly join.
-      - "gamerule locator_bar false"
-      - "difficulty hard"
       - "minecraft:item replace entity {player} hotbar.1 with minecraft:chest[minecraft:custom_name=[{\"text\":\"Kit Selector\",\"italic\":false,\"color\":\"light_purple\"}],lore=[[{\"text\":\"Right click to select a kit\",\"italic\":false,\"color\":\"yellow\"}]],enchantment_glint_override=true] 1"
       - "minecraft:item replace entity {player} hotbar.3 with minecraft:red_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"RED\",\"bold\":true,\"italic\":false,\"color\":\"red\"}]] 1"
       - "minecraft:item replace entity {player} hotbar.5 with minecraft:blue_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"BLUE\",\"bold\":true,\"italic\":false,\"color\":\"blue\"}]] 1"
@@ -68,7 +73,12 @@ game:
     on-prep:
       # Available placeholders: {game}
       # NOT A LOOP! Runs ONLY one time while the arena is prepped and players are spawned.
-      -
+      - "difficulty hard"
+      - "gamerule locator_bar false"
+      - "gamerule send_command_feedback false"
+      - "gamerule command_block_output false"
+      - "gamerule show_advancement_messages false"
+      - "gamerule show_death_messages false"
 
     on-start:
       # Available placeholders: {player}, {game}
@@ -87,12 +97,16 @@ game:
       # Runs once for a players' death and involves the attacker.
       # [!] Beware of duplicate commands. The command actions in on-death will also run during a kill.
       - "heal {attacker}"
+      - "show {attacker} -actionBar &6+ 5 coins (kill)"
+      - "coins add 5 {attacker}"
 
     on-win:
       # Available placeholders {player}, {game}
 
       # Runs once for every player on the winning team.
       - "effect clear {player} minecraft:speed"
+      - "show {attacker} -actionBar &6+ 10 coins (win)"
+      - "coins add 10 {attacker}"
 
     on-lose:
       # Available placeholders {player}, {game}
@@ -147,11 +161,13 @@ scoreboards:
     - "&1"
     - "&eRank: {player-rank-prefix-display}"
     - "&2"
+    - "&eKit: &f{player-kit-display}"
+    - "&3"
     - "&eKills: &f{player-stat-tdm-lifetime-kills} &7(#{player-stat-tdm-lifetime-kills-ranking})"
     - "&eWins: &f{player-stat-tdm-lifetime-wins} &7(#{player-stat-tdm-lifetime-wins-ranking})"
-    - "&3"
-    - "&e{game-next-event}: &f{game-next-event-time}"
     - "&4"
+    - "&e{game-next-event}: &f{game-next-event-time}"
+    - "&5"
     - "&b&l/discord"
     - "&6cerrot.xyz"
 
@@ -164,12 +180,14 @@ scoreboards:
     - "&1"
     - "&eYou are on {player-team-prefix}"
     - "&2"
+    - "&eKit: &f{player-kit-display}"
+    - "&3"
     - "{team-1-prefix-display}: &f{team-1-score}/{game-winning-kills}"
     - "{team-2-prefix-display}: &f{team-2-score}/{game-winning-kills}"
-    - "&3"
-    - "&e{game-next-event}: &f{game-next-event-time}"
     - "&4"
-    - "&eMap: &f{game-map}"
+    - "&e{game-next-event}: &f{game-next-event-time}"
     - "&5"
+    - "&eMap: &f{game-map}"
+    - "&6"
     - "&b&l/discord"
     - "&6cerrot.xyz"
