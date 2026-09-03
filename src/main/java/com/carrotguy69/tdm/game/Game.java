@@ -25,7 +25,6 @@ import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
-import com.carrotguy69.tdm.utils.objects.GlowUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -46,7 +45,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -54,15 +52,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
 import static com.carrotguy69.cxyz.CXYZ.msgYML;
@@ -158,6 +148,8 @@ public class Game {
     public NumberRange nextCapacity;
 
     public String defaultKit;
+
+    public List<UUID> noFallDamagePlayers = new ArrayList<>();
 
     public Game(String id, GameMap map, NumberRange gameCapacity, String defaultKit) {
 
@@ -343,7 +335,7 @@ public class Game {
 
         gp.setTemporaryStat("kills", 0);
 
-        GlowUtils.resetGlowing(p);
+//        GlowUtils.resetGlowing(p);
 
         if (gameState == GameState.WAITING) {
             spawnPlayer(p, lobbyMap.getSpawns().size() > 1 ? lobbyMap.getSpawns().get(new Random().nextInt(0, lobbyMap.getSpawns().size() - 1)) : lobbyMap.getSpawns().getFirst());
@@ -425,6 +417,9 @@ public class Game {
                 win(lead);
             }
         }
+
+        GenericItemRegistry.powerUpsByPlayer.removeAll(gp.getUUID());
+        noFallDamagePlayers.clear();
     }
 
     public List<GamePlayer> getPlayers() {
@@ -436,6 +431,7 @@ public class Game {
         p.getInventory().clear(); // only for tdm
         p.setFireTicks(0);
         p.setGameMode(defaultGamemode);
+        p.setAllowFlight(false);
         p.setFlying(false);
         Objects.requireNonNull(p.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20.0); // The "official" (non-deprecated) way to set max health?
         p.setHealth(20.0);
@@ -877,8 +873,6 @@ public class Game {
 
     private void prep() {
 
-
-
         originalPlayersSize = this.players.size();
         originalTeamsSize = this.teams.size();
 
@@ -915,15 +909,14 @@ public class Game {
 
         // To remove pickups from previous games that failed to delete.
         for (Location powerUpSpawn : map.getPowerUpSpawns()) {
-            Logger.log("Scanning at power up spawn: " + powerUpSpawn.toString());
             powerUpSpawn.getWorld().loadChunk(powerUpSpawn.getChunk());
             for (Entity entity : powerUpSpawn.getNearbyEntities(5, 5, 5)) {
                 if (entity.getType() == EntityType.ARMOR_STAND) {
-                    Logger.log("Found armor stand at " + entity.getLocation());
                     entity.remove();
                 }
             }
         }
+        PowerUpPickup.activePickupLocations.clear();
     }
 
     private void recalcTeamIndexes() {
@@ -947,7 +940,7 @@ public class Game {
                 spawnPlayer(p, map.getSpawns().get(spawnIndex));
                 prepInventory(gp);
 
-                GlowUtils.setGlowing(p, gp.getTeam().getRGBColor());
+//                GlowUtils.setGlowing(p, gp.getTeam().getRGBColor());
             }
         }
     }
@@ -1094,19 +1087,21 @@ public class Game {
                         return;
                     }
 
-                    PowerUpPickup toDespawn = null;
-
-                    for (PowerUpPickup pickup : PowerUpPickup.activePickupLocations) {
+                    for (PowerUpPickup pickup : new ArrayList<>(PowerUpPickup.activePickupLocations)) {
                         for (Player nearby : pickup.getLocation().getNearbyPlayers(1)) {
                             pickup.applyTo(getPlayer(nearby));
-                            toDespawn = pickup;
+
+                            PowerUpPickup toDelete = PowerUpPickup.getNearby(pickup.getLocation());
+
+                            if (toDelete == null) {
+                                Logger.warning("Failed to delete applied powerup because it was not found! " + pickup.getID() + " at" + pickup.getLocation());
+                                continue;
+                            }
+
+                            toDelete.despawn();
                             break;
                         }
                     }
-
-                    if (toDespawn != null)
-                        toDespawn.despawn();
-
                 }}.runTaskTimer(plugin, 0L, 2L).getTaskId()
         );
 
@@ -1157,6 +1152,9 @@ public class Game {
 
         for (GameTeam gt : teams) {
             if (Objects.equals(gt, winner))
+                continue;
+
+            if (gt.getPlayers().isEmpty())
                 continue;
 
             for (GamePlayer gp : gt.getPlayers()) {
@@ -1490,7 +1488,15 @@ public class Game {
 
         sendRecap(winningTeam);
 
-        Player destination = winningTeam.getPlayers().getFirst().getBukkitPlayer();
+        Location destination;
+
+        if (winningTeam.getPlayers().isEmpty()) {
+            destination = map.getBounds().getCenter().toLocation(map.getWorld());
+        }
+
+        else {
+            destination = winningTeam.getPlayers().getFirst().getBukkitPlayer().getLocation();
+        }
 
         Map<String, Object> commonMap = MapFormatters.gameFormatter(this);
 
@@ -1602,6 +1608,12 @@ public class Game {
     }
 
     private static Pair<String, Map<String, Object>> getTeamMembersText(GameTeam winnerTeam) {
+
+        if (winnerTeam.getPlayers().isEmpty()) {
+            Logger.severe("The winning team has no players therefore a list of players could not be generated. This would have thrown an exception in CXYZ if not caught here!");
+            Logger.severe(winnerTeam.toString());
+            return Pair.of("", Map.of());
+        }
 
         com.carrotguy69.cxyz.messages.utils.MapFormatters.ListFormatter playerFormatter = MapFormatters.gamePlayerListFormatter(
                 winnerTeam.getPlayers(),
@@ -1784,7 +1796,7 @@ public class Game {
         for (int i = 0; i < amount; i++) {
             PowerUp powerUp = powerUps.get(i);
 
-            Location spawnLocation = powerUpSpawns.size() - 1 > 0 ? powerUpSpawns.get(random.nextInt(0, powerUpSpawns.size() - 1)) : powerUpSpawns.getFirst();
+            Location spawnLocation = powerUpSpawns.size() - 1 > 0 ? powerUpSpawns.get(random.nextInt(0, powerUpSpawns.size())) : powerUpSpawns.getFirst();
 
             PowerUpPickup pickup = new PowerUpPickup(powerUp.getOriginalItem(), spawnLocation);
             pickup.spawn();

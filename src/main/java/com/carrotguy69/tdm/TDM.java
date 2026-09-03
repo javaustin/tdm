@@ -45,8 +45,10 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -511,6 +513,26 @@ public final class TDM extends JavaPlugin implements Listener {
         }
 
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onFlight(PlayerToggleFlightEvent e) {
+        Player p = e.getPlayer();
+
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        Player p = e.getPlayer();
+
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
     }
 
 

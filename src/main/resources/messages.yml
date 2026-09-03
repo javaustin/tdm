@@ -127,7 +127,7 @@ game:
       progress-units: "&e█"
 
   power-up:
-    pickup: "&eYou picked up a((n)) {display-name}!"
+    pickup: "&eYou picked up a{n} {display-name}!"
 
 
   # N/A

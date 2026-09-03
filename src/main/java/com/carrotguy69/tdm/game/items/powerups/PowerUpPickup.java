@@ -110,4 +110,21 @@ public class PowerUpPickup extends CustomItem {
         return this.location;
     }
 
+    public static PowerUpPickup getNearby(Location location) {
+
+        if (activePickupLocations.isEmpty()) {
+            return null;
+        }
+
+        PowerUpPickup closest = activePickupLocations.getFirst();
+
+        for (PowerUpPickup pickup : activePickupLocations) {
+            if (pickup.getLocation().distance(location) < closest.getLocation().distance(location)) {
+                closest = pickup;
+            }
+        }
+
+        return closest;
+    }
+
 }

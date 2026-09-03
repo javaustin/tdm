@@ -73,7 +73,7 @@ maps:
       - {world: "tdm-world", x: -451, y: -53, z: -503, yaw: 90.0, pitch: 0.0f}
       - {world: "tdm-world", x: -462, y: -40, z: -512, yaw: -135.0, pitch: 0.0f}
       - {world: "tdm-world", x: -426, y: -40, z: -514, yaw: 180.0, pitch: 0.0f}
-      - {world: "tdm-world", x: -461, y: -40, z: -423, yaw: 0.0, pitch: 0.0}
+      - {world: "tdm-world", x: -461, y: -40, z: -423, yaw: 180.0, pitch: 0.0}
       - {world: "tdm-world", x: -463, y: -40, z: -459, yaw: 0.0, pitch: 0.0}
 
     powerup-spawns:
