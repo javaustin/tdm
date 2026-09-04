@@ -47,7 +47,6 @@ import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -68,6 +67,11 @@ public final class TDM extends JavaPlugin implements Listener {
 
     /*
     TODO:
+        - you still havent fixed the winning player glitch (a quit player can never win the game)
+        - weird powerup bugs where multiple powerups can be gained (seemingly randomly) upon walking up to it
+        - ?
+
+
         - make sure same team players cant damage eachother
             - Powerup(location, [consumer] action)
             ideas:
@@ -222,6 +226,12 @@ public final class TDM extends JavaPlugin implements Listener {
         }
 
         if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK || cause == EntityDamageEvent.DamageCause.PROJECTILE) {
+            return;
+        }
+
+        if (cause == EntityDamageEvent.DamageCause.FALL && game.jumpPackNoFallDamagePlayers.contains(p.getUniqueId())) {
+            game.jumpPackNoFallDamagePlayers.remove(p.getUniqueId());
+            e.setCancelled(true);
             return;
         }
 

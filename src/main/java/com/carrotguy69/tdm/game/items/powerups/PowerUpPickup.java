@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class PowerUpPickup extends CustomItem {
     public static List<PowerUpPickup> activePickupLocations = new ArrayList<>();
 
     private final CustomItem originalItem;
-    private final Location location;
+    private Location location;
 
     public PowerUpPickup(CustomItem item, Location location) {
         super(
@@ -41,30 +42,40 @@ public class PowerUpPickup extends CustomItem {
 
         // Remove previous power up if somehow not cleared
         for (Entity en : location.getWorld().getNearbyEntities(location, 2, 2, 2)) {
-            if (en.getType() == EntityType.ARMOR_STAND) {
+            if (en.getType() == EntityType.ARMOR_STAND || en.getType() == EntityType.ITEM_DISPLAY) {
                 en.remove();
             }
         }
 
-        ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0.5, -1, 0.5), EntityType.ARMOR_STAND);
-        armorStand.setVisible(false);
-        armorStand.setGravity(false);
-        armorStand.setHelmet(originalItem.toItemStack());
+        location = location.clone().add(0.5, 0, 0.5);
 
-        ArmorStand nameTagStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
+        ArmorStand nameTagStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
         nameTagStand.setVisible(false);
         nameTagStand.setGravity(false);
         nameTagStand.setCustomNameVisible(true);
         nameTagStand.setCustomName(f(originalItem.getCustomName()));
 
+        ItemDisplay itemDisplay = (ItemDisplay) location.getWorld().spawnEntity(location.clone().add(0, 1.5, 0), EntityType.ITEM_DISPLAY);
+        itemDisplay.setItemStack(originalItem.toItemStack());
+        itemDisplay.setDisplayWidth(0.25f);
+        itemDisplay.setDisplayHeight(0.25f);
+
+        int[] frame = {1};
         new BukkitRunnable() {public void run () {
-            if (armorStand.isDead()) {
+            if (itemDisplay.isDead() || nameTagStand.isDead()) {
                 this.cancel();
                 return;
             }
-            Location location = armorStand.getLocation();
-            location.setYaw(location.getYaw() + 2); // Rotate the yaw (horizontal rotation) by 1 degree
-            armorStand.teleport(location); // Teleport the armor stand to update its rotation
+
+            Location location = itemDisplay.getLocation();
+
+            double wave = Math.sin(Math.PI * frame[0]);
+            frame[0] += 1;
+
+            location.add(0, wave, 0);
+            location.setRotation(frame[0], 0);
+
+            itemDisplay.teleport(location);
         }}.runTaskTimer(plugin, 0L, 0L);
 
         activePickupLocations.add(this);
@@ -72,7 +83,7 @@ public class PowerUpPickup extends CustomItem {
 
     public void despawn() {
         for (Entity en : location.getWorld().getNearbyEntities(location, 2, 2, 2)) {
-            if (en.getType() == EntityType.ARMOR_STAND) {
+            if (en.getType() == EntityType.ARMOR_STAND || en.getType() == EntityType.ITEM_DISPLAY) {
                 en.remove();
             }
         }
@@ -85,7 +96,7 @@ public class PowerUpPickup extends CustomItem {
             Location location = entry.location;
 
             for (Entity en : location.getWorld().getNearbyEntities(location, 2, 2, 2)) {
-                if (en.getType() == EntityType.ARMOR_STAND) {
+                if (en.getType() == EntityType.ARMOR_STAND || en.getType() == EntityType.ITEM_DISPLAY) {
                     en.remove();
                 }
             }

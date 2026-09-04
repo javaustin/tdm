@@ -33,7 +33,6 @@ com/carrotguy69/tdm/cmd/game/team/List.class
 com/carrotguy69/tdm/eventHandler/CoreChatHandler$1.class
 com/carrotguy69/tdm/cmd/game/Ready.class
 com/carrotguy69/tdm/game/items/managers/GunManager.class
-com/carrotguy69/tdm/game/items/powerups/PowerUpLoader$5.class
 com/carrotguy69/tdm/game/items/powerups/PowerUpLoader$2.class
 com/carrotguy69/tdm/cmd/game/List.class
 com/carrotguy69/tdm/game/Game$8.class
@@ -64,7 +63,6 @@ com/carrotguy69/tdm/game/other/Durations.class
 com/carrotguy69/tdm/TDM$AutoJoinScope.class
 com/carrotguy69/tdm/game/Game$6.class
 com/carrotguy69/tdm/game/Game$12.class
-com/carrotguy69/tdm/game/items/powerups/PowerUpLoader$4.class
 com/carrotguy69/tdm/game/other/DamageSource$Reason.class
 com/carrotguy69/tdm/game/map/MapSource$Type.class
 com/carrotguy69/tdm/game/map/sources/SchematicSource.class

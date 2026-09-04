@@ -65,6 +65,7 @@ import static com.carrotguy69.tdm.TDM.gameScoreboardLines;
 import static com.carrotguy69.tdm.TDM.lobbyMap;
 import static com.carrotguy69.tdm.TDM.lobbyScoreboardLines;
 import static com.carrotguy69.tdm.TDM.messagesYML;
+import static com.carrotguy69.tdm.TDM.noInteractionTicks;
 import static com.carrotguy69.tdm.TDM.plugin;
 import static com.carrotguy69.tdm.TDM.scoreboardsEnabled;
 
@@ -149,7 +150,7 @@ public class Game {
 
     public String defaultKit;
 
-    public List<UUID> noFallDamagePlayers = new ArrayList<>();
+    public List<UUID> jumpPackNoFallDamagePlayers = new ArrayList<>();
 
     public Game(String id, GameMap map, NumberRange gameCapacity, String defaultKit) {
 
@@ -419,7 +420,7 @@ public class Game {
         }
 
         GenericItemRegistry.powerUpsByPlayer.removeAll(gp.getUUID());
-        noFallDamagePlayers.clear();
+        jumpPackNoFallDamagePlayers.clear();
     }
 
     public List<GamePlayer> getPlayers() {
@@ -911,7 +912,7 @@ public class Game {
         for (Location powerUpSpawn : map.getPowerUpSpawns()) {
             powerUpSpawn.getWorld().loadChunk(powerUpSpawn.getChunk());
             for (Entity entity : powerUpSpawn.getNearbyEntities(5, 5, 5)) {
-                if (entity.getType() == EntityType.ARMOR_STAND) {
+                if (entity.getType() == EntityType.ARMOR_STAND || entity.getType() == EntityType.ITEM_DISPLAY) {
                     entity.remove();
                 }
             }
@@ -1082,27 +1083,41 @@ public class Game {
         spawnPowerUps(maxAmount, despawnTicks);
 
         taskIDs.add(
-                new BukkitRunnable() {public void run() {
-                    if (gameState != GameState.ACTIVE) {
-                        return;
-                    }
+            new BukkitRunnable() {public void run() {
+                if (gameState != GameState.ACTIVE) {
+                    return;
+                }
 
-                    for (PowerUpPickup pickup : new ArrayList<>(PowerUpPickup.activePickupLocations)) {
-                        for (Player nearby : pickup.getLocation().getNearbyPlayers(1)) {
-                            pickup.applyTo(getPlayer(nearby));
+                for (PowerUpPickup pickup : new ArrayList<>(PowerUpPickup.activePickupLocations)) {
+                    for (Player nearby : pickup.getLocation().getNearbyPlayers(1)) {
 
-                            PowerUpPickup toDelete = PowerUpPickup.getNearby(pickup.getLocation());
-
-                            if (toDelete == null) {
-                                Logger.warning("Failed to delete applied powerup because it was not found! " + pickup.getID() + " at" + pickup.getLocation());
-                                continue;
-                            }
-
-                            toDelete.despawn();
-                            break;
+                        if (nearby.getGameMode() != defaultGamemode) {
+                            continue;
                         }
+
+//                            if (noInteractionTicks.contains(nearby.getUniqueId()))
+//                                continue;
+//
+//                            noInteractionTicks.add(nearby.getUniqueId());
+//
+//                            new BukkitRunnable() {public void run() {
+//                                noInteractionTicks.remove(nearby.getUniqueId());
+//                            }}.runTaskLater(plugin, 1L);
+
+                        PowerUpPickup toDelete = PowerUpPickup.getNearby(pickup.getLocation());
+                        if (toDelete == null) {
+                            Logger.warning("Failed to delete applied powerup because it was not found! " + pickup.getID() + " at" + pickup.getLocation());
+                            continue;
+                        }
+
+                        toDelete.despawn();
+
+                        pickup.applyTo(getPlayer(nearby));
+
+                        break;
                     }
-                }}.runTaskTimer(plugin, 0L, 2L).getTaskId()
+                }
+            }}.runTaskTimer(plugin, 0L, 2L).getTaskId()
         );
 
         // Anything in this task runs every second
@@ -1794,7 +1809,7 @@ public class Game {
         }
 
         for (int i = 0; i < amount; i++) {
-            PowerUp powerUp = powerUps.get(i);
+            PowerUp powerUp = powerUps.get(new Random().nextInt(0, powerUps.size()));
 
             Location spawnLocation = powerUpSpawns.size() - 1 > 0 ? powerUpSpawns.get(random.nextInt(0, powerUpSpawns.size())) : powerUpSpawns.getFirst();
 
