@@ -163,7 +163,7 @@ guns:
     horizontal-spread: 0
     fire-rate-per-second: 0.6
     reload-time-seconds: 4
-    damage: 18
+    damage: 20
     range: 100
     lore:
       -
@@ -239,15 +239,15 @@ custom-items:
     lore:
       - "Creates a cloud of smoke that blinds nearby enemy players"
 
-#  health-pickup:
-#    name: "&x&D&E&2&7&2&7H&x&E&1&2&B&3&0e&x&E&4&2&F&3&9a&x&E&6&3&2&4&2l&x&E&9&3&6&4&Bt&x&E&C&3&A&5&4h &x&F&1&4&1&6&5P&x&F&4&4&5&6&Ei&x&F&7&4&9&7&7c&x&F&A&4&D&8&0k&x&F&C&5&0&8&9u&x&F&F&5&4&9&2p"
-#    material: RED_DYE
-#    custom-type: power_up
-#    enchants:
-#      - id: GLINT
-#        level: 1
-#    lore:
-#      - "Right click to fully heal yourself!"
+  health-pickup:
+    name: "&x&D&E&2&7&2&7H&x&E&1&2&B&3&0e&x&E&4&2&F&3&9a&x&E&6&3&2&4&2l&x&E&9&3&6&4&Bt&x&E&C&3&A&5&4h &x&F&1&4&1&6&5P&x&F&4&4&5&6&Ei&x&F&7&4&9&7&7c&x&F&A&4&D&8&0k&x&F&C&5&0&8&9u&x&F&F&5&4&9&2p"
+    material: RED_DYE
+    custom-type: power_up
+    enchants:
+      - id: GLINT
+        level: 1
+    lore:
+      - "Right click to fully heal yourself!"
 #
 #  drone:
 #    name: "&cDrone"

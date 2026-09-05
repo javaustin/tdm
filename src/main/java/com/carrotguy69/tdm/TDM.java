@@ -67,9 +67,7 @@ public final class TDM extends JavaPlugin implements Listener {
 
     /*
     TODO:
-        - you still havent fixed the winning player glitch (a quit player can never win the game)
-        - weird powerup bugs where multiple powerups can be gained (seemingly randomly) upon walking up to it
-        - ?
+        - compass is tripping
 
 
         - make sure same team players cant damage eachother

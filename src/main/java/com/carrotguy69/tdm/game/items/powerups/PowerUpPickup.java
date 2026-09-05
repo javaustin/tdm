@@ -4,6 +4,7 @@ package com.carrotguy69.tdm.game.items.powerups;
 import com.carrotguy69.tdm.game.GamePlayer;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
+import com.carrotguy69.tdm.utils.Logger;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -23,6 +24,7 @@ public class PowerUpPickup extends CustomItem {
 
     private final CustomItem originalItem;
     private Location location;
+    public boolean isDead;
 
     public PowerUpPickup(CustomItem item, Location location) {
         super(
@@ -36,6 +38,7 @@ public class PowerUpPickup extends CustomItem {
         );
         this.location = location;
         this.originalItem = item;
+        this.isDead = false;
     }
 
     public void spawn() {
@@ -88,6 +91,8 @@ public class PowerUpPickup extends CustomItem {
             }
         }
 
+        this.isDead = true;
+
         activePickupLocations.remove(this);
     }
 
@@ -106,6 +111,8 @@ public class PowerUpPickup extends CustomItem {
     }
 
     public void applyTo(GamePlayer gp) {
+
+
         PowerUp powerUp = GenericItemRegistry.powerUps.get(originalItem.getID());
 
         if (powerUp == null) {
@@ -114,6 +121,7 @@ public class PowerUpPickup extends CustomItem {
 
         GenericItemRegistry.powerUpsByPlayer.put(gp.getUUID(), powerUp);
 
+        Logger.log(String.format("%s picked up PowerUp %s", gp.getNetworkPlayer().getUsername(), powerUp.getID()));
         powerUp.getPickupAction().accept(gp);
     }
 

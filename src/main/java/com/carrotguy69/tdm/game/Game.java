@@ -1082,6 +1082,8 @@ public class Game {
 
         spawnPowerUps(maxAmount, despawnTicks);
 
+
+
         taskIDs.add(
             new BukkitRunnable() {public void run() {
                 if (gameState != GameState.ACTIVE) {
@@ -1089,20 +1091,25 @@ public class Game {
                 }
 
                 for (PowerUpPickup pickup : new ArrayList<>(PowerUpPickup.activePickupLocations)) {
+
+                    if (pickup.isDead) {
+                        continue;
+                    }
+
                     for (Player nearby : pickup.getLocation().getNearbyPlayers(1)) {
 
                         if (nearby.getGameMode() != defaultGamemode) {
                             continue;
                         }
 
-//                            if (noInteractionTicks.contains(nearby.getUniqueId()))
-//                                continue;
-//
-//                            noInteractionTicks.add(nearby.getUniqueId());
-//
-//                            new BukkitRunnable() {public void run() {
-//                                noInteractionTicks.remove(nearby.getUniqueId());
-//                            }}.runTaskLater(plugin, 1L);
+                            if (noInteractionTicks.contains(nearby.getUniqueId()))
+                                continue;
+
+                            noInteractionTicks.add(nearby.getUniqueId());
+
+                            new BukkitRunnable() {public void run() {
+                                noInteractionTicks.remove(nearby.getUniqueId());
+                            }}.runTaskLater(plugin, 1L);
 
                         PowerUpPickup toDelete = PowerUpPickup.getNearby(pickup.getLocation());
                         if (toDelete == null) {
@@ -1339,13 +1346,13 @@ public class Game {
 
     public @Nullable GameTeam getLeadingTeam() {
 
-        GameTeam current = teams.getFirst();
+        GameTeam current = null;
 
         for (GameTeam team : teams) {
             if (team.getPlayers().isEmpty())
                 continue;
 
-            if (team.getStat("kills", 0) > current.getStat("kills", 0)) {
+            if (current == null || team.getStat("kills", 0) > current.getStat("kills", 0)) {
                 current = team;
             }
         }
@@ -1804,6 +1811,8 @@ public class Game {
 
         amount = Math.min(amount, Math.min(map.getPowerUpSpawns().size(), powerUps.size()));
 
+        Logger.log(String.format("Spawning %s powerups on %s.", amount, map.getID()));
+
         if (powerUpSpawns.isEmpty()) {
             return;
         }
@@ -1816,12 +1825,18 @@ public class Game {
             PowerUpPickup pickup = new PowerUpPickup(powerUp.getOriginalItem(), spawnLocation);
             pickup.spawn();
 
+            Logger.log(String.format("- Spawned %s", powerUp.getID()));
+
+
             taskIDs.add(new BukkitRunnable() {public void run() {
                 if (gameState != GameState.ACTIVE) {
                     return;
                 }
 
                 pickup.despawn();
+
+                Logger.log(String.format("- Despawned %s", powerUp.getID()));
+
 
                 spawnPowerUps(1, despawnTicks);
             }}.runTaskLater(plugin, despawnTicks).getTaskId());
