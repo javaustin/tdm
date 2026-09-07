@@ -33,7 +33,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -72,7 +71,9 @@ public final class TDM extends JavaPlugin implements Listener {
 
     /*
     TODO:
-        - respect damage
+        - respect armor when damaging player
+        - think about the aesthetics of the death lifecycle when a player is killed by quitting the game (which results in the other team leaving)
+
             - Powerup(location, [consumer] action)
             ideas:
             - ☑️ explosive arrow (creates explosion and changes blocks to nether and fire [temporarily, make sure to restore even if server shuts down])
@@ -122,6 +123,28 @@ public final class TDM extends JavaPlugin implements Listener {
 
     public static List<UUID> noInteractionTicks = new ArrayList<>();
 
+    public static class WebhookSettings {
+        public static boolean enabled = false;
+        public static String url = "";
+        public static List<Event> eventsLogged = new ArrayList<>();
+
+        public static void setEventsLogged(List<String> list) {
+            for (String event : list) {
+                Event e = Event.valueOf(event.toUpperCase().replace("-", "_"));
+                eventsLogged.add(e);
+            }
+        }
+
+        public enum Event {
+            LOBBY_JOIN,
+            LOBBY_LEAVE,
+            GAME_JOIN,
+            GAME_LEAVE,
+            DEATH,
+            WIN_RECAP
+        }
+    }
+
     public enum AutoJoinScope {
         SERVER,
         WORLD;
@@ -129,8 +152,6 @@ public final class TDM extends JavaPlugin implements Listener {
             return s != null && s.toUpperCase().equals(SERVER.name()) ? SERVER : WORLD;
         }
     }
-
-
 
     @Override
     public void onEnable() {
@@ -181,7 +202,7 @@ public final class TDM extends JavaPlugin implements Listener {
 
         GamePlayer gamePlayer = new GamePlayer(e.getPlayer().getUniqueId());
         gamePlayer.kit = game.defaultKit;
-        game.addPlayer(gamePlayer);
+        game.addPlayer(gamePlayer, false);
     }
 
 
@@ -513,7 +534,7 @@ public final class TDM extends JavaPlugin implements Listener {
             // Instead of cancelling, let's set the bow to un-usable.
 
             if (game.getGameState() != GameState.ACTIVE) {
-                e.setUseItemInHand(Event.Result.DENY);
+                e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
             }
             return;
         }

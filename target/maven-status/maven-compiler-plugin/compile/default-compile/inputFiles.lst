@@ -35,9 +35,6 @@
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/items/powerups/PowerUpPickup.java
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/map/GameMap.java
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/map/MapSource.java
-/home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/map/sources/SchematicSource.java
-/home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/map/sources/StaticSource.java
-/home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/map/sources/WorldCopySource.java
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/other/DamageSource.java
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/game/other/Durations.java
 /home/austin/Documents/dev/tdm/src/main/java/com/carrotguy69/tdm/messages/MessageGrabber.java

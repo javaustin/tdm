@@ -10,26 +10,26 @@ indicators:
 
 lobby:
   # gamePlayer
-  chat: "{player-team-prefix}{player-rank-prefix}{player-rank-color}{player}: {player-chat-color}{content}" # + content
-  join: "{player-rank-prefix}{player-rank-color}{player} &ejoined the lobby."
-  leave: "{player-rank-prefix}{player-rank-color}{player} &eleft the lobby."
+  chat: "{player-team-prefix}{player-rank-prefix}{player-rank-color}{player-display-name}: {player-chat-color}{content}" # + content
+  join: "{player-rank-prefix}{player-rank-color}{player-display-name} &ejoined the lobby."
+  leave: "{player-rank-prefix}{player-rank-color}{player-display-name} &eleft the lobby."
 
   teams-reset-announcement: "&cTeams have been reset by an admin!"
 
   # teamFormatter, gamePlayer
   team:
     join: "&eYou joined {team-color}{team-name}"
-    join-announcement: "{player-team-color}{player} joined the team"
+    join-announcement: "{player-team-color}{player-display-name} joined the team"
 
     leave: "&eYou left {team-color}{team-name}"
-    leave-announcement: "{player-team-color}{player} left the team"
+    leave-announcement: "{player-team-color}{player-display-name} left the team"
 
     list:
       list: |
         {player-team-display}: {members}
 
       team-members-list:
-        entry-format: "{player-rank-color}{player}"
+        entry-format: "{player-rank-color}{player-display-name}"
         separator: ", "
         max-entries: 9999
 
@@ -40,9 +40,9 @@ lobby:
 
 game:
   # gamePlayer
-  chat: "{player-team-prefix}{player-rank-color}{player}: &f{content}" # + {content}
-  join: "{player-rank-prefix}{player-rank-color}{player} &ejoined the game."
-  leave: "{player-rank-prefix}{player-rank-color}{player} &eleft the game."
+  chat: "{player-team-prefix}{player-rank-color}{player-display-name}: &f{content}" # + {content}
+  join: "{player-rank-prefix}{player-rank-color}{player-display-name} &ejoined the game."
+  leave: "{player-rank-prefix}{player-rank-color}{player-display-name} &eleft the game."
 
   timer-reset-announcement: "&a{timer} timer was reset by an admin!"
 
@@ -81,10 +81,10 @@ game:
     announcement:
 
       player:
-        melee: "&e{player-team-color}{player} &ewas killed by {attacker-team-color}{attacker}!"
-        projectile: "&e{player-team-color}{player} &ewas shot by {attacker-team-color}{attacker}!"
-        explosive: "&e{player-team-color}{player} &ewas blown up by {attacker-team-color}{attacker}!"
-        default: "&e{player-team-color}{player} &edied!"
+        melee: "&e{player-team-color}{player-display-name} &ewas killed by {attacker-team-color}{attacker}!"
+        projectile: "&e{player-team-color}{player-display-name} &ewas shot by {attacker-team-color}{attacker}!"
+        explosive: "&e{player-team-color}{player-display-name} &ewas blown up by {attacker-team-color}{attacker}!"
+        default: "&e{player-team-color}{player-display-name} &edied!"
 
     message:
       team:
@@ -141,7 +141,7 @@ game:
       fade-out-ticks: 20
 
     message: "&aYou have been respawned!"
-    respawned-by-admin-announcement: "&e{player} was respawned by an admin!"
+    respawned-by-admin-announcement: "&e{player-display-name} was respawned by an admin!"
 
 
   # gamePlayerFormatter ({winner-player}, {player}), teamFormatter ({winner-team}, {team})
@@ -164,13 +164,13 @@ game:
   recaps:
     # This defines the {top-killers} placeholder in the recaps. {i} represents the position number in the leaderboard.
     top-killers-numbered-list:
-      entry-format: "{player-team-color}{player}: &7{player-temp-stat-kills} kills"
+      entry-format: "{player-team-color}{player-display-name}: &7{player-temp-stat-kills} kills"
       separator: "\n&f{i}.)) "
       max-entries: 3
 
     # This defines the {team-members} placeholder in the recaps
     team-list:
-      entry-format: "{player-rank-color}{player}"
+      entry-format: "{player-rank-color}{player-display-name}"
       separator: ", "
       max-entries: 9999
 
@@ -183,6 +183,10 @@ game:
       &fTop killers:{top-killers}
       &f-----------------------------------------------
 
+    winner-webhook-display:
+      title: "{winner-team-display} won the game!"
+      description: "**Score:** **{winner-team-score}** - {loser-team-score}\n\n**Members**: {winner-team-members}\n\n**Top Killers:** {top-killers}"
+      color: -1 # If color < 0, then the color will show as the winner team color
 
 
 command:
@@ -224,8 +228,8 @@ command:
   toggle-not-ready: ""
   toggle-ready-fail: "&eThis command is only available in the lobby."
 
-  set-player-lives: "&aSet {player}'s lives to {player-lives}."
-  get-player-lives: "&a{player} has {player-lives} lives."
+  set-player-lives: "&aSet {player-display-name}'s lives to {player-lives}."
+  get-player-lives: "&a{player-display-name} has {player-lives} lives."
 
   info:
     message: |

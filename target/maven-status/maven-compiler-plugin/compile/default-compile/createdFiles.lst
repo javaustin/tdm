@@ -11,6 +11,7 @@ com/carrotguy69/tdm/cmd/game/Kit.class
 com/carrotguy69/tdm/game/items/powerups/PowerUpLoader.class
 com/carrotguy69/tdm/game/items/classes/GunItem.class
 com/carrotguy69/tdm/game/items/managers/CustomItemManager.class
+com/carrotguy69/tdm/TDM$WebhookSettings.class
 com/carrotguy69/tdm/game/Game$5$1.class
 com/carrotguy69/tdm/utils/Startup.class
 com/carrotguy69/tdm/tabCompleters/Team.class
@@ -49,7 +50,6 @@ com/carrotguy69/tdm/game/Game$13.class
 com/carrotguy69/tdm/tabCompleters/Game.class
 com/carrotguy69/tdm/TDM$3.class
 com/carrotguy69/tdm/game/Game$11$1.class
-com/carrotguy69/tdm/game/map/sources/StaticSource.class
 com/carrotguy69/tdm/game/GameTeam.class
 com/carrotguy69/tdm/game/items/powerups/PowerUpLoader$3.class
 com/carrotguy69/tdm/game/items/GenericItem$Enchant.class
@@ -68,8 +68,7 @@ com/carrotguy69/tdm/game/Game$12.class
 com/carrotguy69/tdm/game/items/powerups/PowerUpLoader$4.class
 com/carrotguy69/tdm/game/other/DamageSource$Reason.class
 com/carrotguy69/tdm/game/map/MapSource$Type.class
-com/carrotguy69/tdm/game/map/sources/SchematicSource.class
-com/carrotguy69/tdm/game/map/sources/WorldCopySource.class
+com/carrotguy69/tdm/TDM$WebhookSettings$Event.class
 com/carrotguy69/tdm/game/map/MapSource.class
 com/carrotguy69/tdm/game/Game.class
 com/carrotguy69/tdm/game/items/GenericItem.class

@@ -10,12 +10,14 @@ import com.carrotguy69.cxyz.utils.BroadcastUtils;
 import com.carrotguy69.cxyz.utils.ColorUtils;
 import com.carrotguy69.cxyz.utils.ItemUtils;
 import com.carrotguy69.cxyz.utils.NumberRange;
+import com.carrotguy69.cxyz.webhook.DiscordEmbed;
+import com.carrotguy69.cxyz.webhook.DiscordWebhook;
 import com.carrotguy69.tdm.TDM;
-import com.carrotguy69.tdm.game.items.managers.GunManager;
 import com.carrotguy69.tdm.game.items.GenericItem;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
 import com.carrotguy69.tdm.game.items.classes.GunItem;
+import com.carrotguy69.tdm.game.items.managers.GunManager;
 import com.carrotguy69.tdm.game.items.powerups.PowerUp;
 import com.carrotguy69.tdm.game.items.powerups.PowerUpPickup;
 import com.carrotguy69.tdm.game.map.GameMap;
@@ -27,6 +29,7 @@ import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.GameMode;
@@ -52,7 +55,15 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
 import static com.carrotguy69.cxyz.CXYZ.msgYML;
@@ -93,6 +104,9 @@ import static com.carrotguy69.tdm.messages.TDMMessageKey.MID_GAME_JOIN_FADE_OUT_
 import static com.carrotguy69.tdm.messages.TDMMessageKey.MID_GAME_JOIN_STAY_TICKS;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.MID_GAME_JOIN_SUBTITLE;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.MID_GAME_JOIN_TITLE;
+import static com.carrotguy69.tdm.messages.TDMMessageKey.RECAP_WEBHOOK_COLOR;
+import static com.carrotguy69.tdm.messages.TDMMessageKey.RECAP_WEBHOOK_DESCRIPTION;
+import static com.carrotguy69.tdm.messages.TDMMessageKey.RECAP_WEBHOOK_TITLE;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.RECAP_WINNER;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.RESPAWN_FADE_IN_TICKS;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.RESPAWN_FADE_OUT_TICKS;
@@ -304,7 +318,7 @@ public class Game {
         }
     }
 
-    public void addPlayer(GamePlayer gp) {
+    public void addPlayer(GamePlayer gp, boolean isTransfer) {
 
         if (gp == null) {
             return;
@@ -341,16 +355,30 @@ public class Game {
         if (gameState == GameState.WAITING) {
             spawnPlayer(p, lobbyMap.getSpawns().size() > 1 ? lobbyMap.getSpawns().get(new Random().nextInt(0, lobbyMap.getSpawns().size() - 1)) : lobbyMap.getSpawns().getFirst());
 
+            Map<String, Object> commonMap = MapFormatters.gamePlayerFormatter(gp);
+            commonMap.putAll(MapFormatters.gameFormatter(this));
+
             this.announce(
                     MessageGrabber.grab(TDMMessageKey.LOBBY_JOIN),
-                    MapFormatters.gamePlayerFormatter(gp),
+                    commonMap,
                     List.of()
             );
 
-            Map<String, Object> commonMap = MapFormatters.gameFormatter(this);
-            commonMap.putAll(MapFormatters.gamePlayerFormatter(gp));
-            runConfigCommands(configYML.getStringList("game.command-actions.on-lobby"), commonMap);
+            if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.LOBBY_JOIN)) {
 
+                if (!isTransfer) {
+                    String desc = ChatColor.stripColor(f(formatPlaceholders(MessageGrabber.grab(TDMMessageKey.LOBBY_JOIN), commonMap)));
+                    desc = desc.replace(gp.getNetworkPlayer().getDisplayName(), "**" + gp.getNetworkPlayer().getDisplayName() + "**");
+
+                    DiscordEmbed embed = new DiscordEmbed().create("", desc, Color.YELLOW.asRGB());
+
+                    new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+                }
+
+
+            }
+
+            runConfigCommands(configYML.getStringList("game.command-actions.on-lobby"), commonMap);
 
             if (isPlayable()) {
                 tryLobbyCountdown();
@@ -381,6 +409,16 @@ public class Game {
                     commonMap,
                     List.of()
             );
+
+            if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.LOBBY_LEAVE)) {
+
+                String desc = ChatColor.stripColor(f(formatPlaceholders(MessageGrabber.grab(LOBBY_LEAVE), commonMap)));
+                desc = desc.replace(gp.getNetworkPlayer().getDisplayName(), "**" + gp.getNetworkPlayer().getDisplayName() + "**");
+
+                DiscordEmbed embed = new DiscordEmbed().create("", desc, Color.YELLOW.asRGB());
+
+                new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+            }
         }
 
         else {
@@ -390,6 +428,15 @@ public class Game {
                     commonMap,
                     List.of()
             );
+
+            if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.GAME_LEAVE)) {
+                String desc = ChatColor.stripColor(f(formatPlaceholders(MessageGrabber.grab(GAME_LEAVE), commonMap)));
+                desc = desc.replace(gp.getNetworkPlayer().getDisplayName(), "**" + gp.getNetworkPlayer().getDisplayName() + "**");
+
+                DiscordEmbed embed = new DiscordEmbed().create("", desc, Color.YELLOW.asRGB());
+
+                new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+            }
 
             if (gameState == GameState.ACTIVE) {
                 // We should eliminate the player just so there is something handling death and a possible forced win (via forfeit).
@@ -1243,12 +1290,33 @@ public class Game {
             commonMap.putAll(MapFormatters.cloneFormaterToNewKey(MapFormatters.gamePlayerFormatter(attacker), "player", "attacker"));
         }
 
+        String unparsed = MessageGrabber.grab(TDMMessageKey.valueOf("DEATH_ANNOUNCEMENT_" + lastDamageSource.reason().name().toUpperCase()));
+
         // Announce death to game
         announce(
-                MessageGrabber.grab(TDMMessageKey.valueOf("DEATH_ANNOUNCEMENT_" + lastDamageSource.reason().name().toUpperCase())),
+                unparsed,
                 commonMap,
                 List.of()
         );
+
+        if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.DEATH)) {
+            String desc = ChatColor.stripColor(f(formatPlaceholders(unparsed, commonMap)));
+
+            desc = desc.replace(player.getNetworkPlayer().getDisplayName(), "**" + player.getNetworkPlayer().getDisplayName() + "**");
+
+            int color = Color.MAROON.asRGB();
+
+            if (attacker != null) {
+                desc = desc.replace(attacker.getNetworkPlayer().getDisplayName(), "**" + attacker.getNetworkPlayer().getDisplayName() + "**");
+                color = attacker.getTeam().getRGBColor();
+            }
+
+
+
+            DiscordEmbed embed = new DiscordEmbed().create("", desc, color);
+
+            new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+        }
 
         // Send death message to the player who died
         MessageUtils.sendParsedMessage(
@@ -1614,6 +1682,35 @@ public class Game {
         unparsed = unparsed.replace("{top-killers}", topKillersText);
 
         announce(unparsed, commonMap, List.of());
+
+        if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.WIN_RECAP)) {
+            // Going to use a custom message for this only
+
+            String title = MessageGrabber.grab(RECAP_WEBHOOK_TITLE);
+            String desc = MessageGrabber.grab(RECAP_WEBHOOK_DESCRIPTION);
+            int color = messagesYML.getInt(RECAP_WEBHOOK_COLOR.getPath(), -1);
+
+            title = title.replace("{winner-team-members}", teamMembersText);
+            title = title.replace("{top-killers}", topKillersText);
+            title = title.replace("))", ")");
+
+            desc = desc.replace("{winner-team-members}", teamMembersText);
+            desc = desc.replace("{top-killers}", topKillersText);
+            desc = desc.replace("))", ")");
+
+            title = formatPlaceholders(title, commonMap);
+            desc = formatPlaceholders(desc, commonMap);
+
+
+            if (color < 0) {
+                color = winningTeam.getRGBColor();
+            }
+
+            DiscordEmbed embed = new DiscordEmbed().create(ChatColor.stripColor(f(title)), ChatColor.stripColor(f(desc)), color);
+
+            new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+        }
+
     }
 
     private Pair<String, Map<String, Object>> getTopKillersText() {
@@ -1697,7 +1794,7 @@ public class Game {
                 GamePlayer newGp = new GamePlayer(gp.getUUID());
                 newGp.kit = gp.kit; // we want to persist their kit
 
-                newGame.addPlayer(newGp);
+                newGame.addPlayer(newGp, true);
             }
         }}.runTaskLater(CXYZ.plugin, 2L);
 

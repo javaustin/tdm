@@ -6,6 +6,19 @@ auto-join:
 
 game:
 
+  # Send game info to a discord webhook
+  webhook:
+    enabled: true
+    url: ""
+
+    log-events:
+      - lobby_join
+      - lobby_leave
+      - game_join
+      - game_leave
+      - death
+      - win_recap
+
   respawns:
     # Time (in seconds) a player must wait before respawning. Set this value to 0 or below to respawn immediately.
     respawn-seconds: 3

@@ -122,6 +122,10 @@ public enum TDMMessageKey {
 
     RECAP_WINNER("game.recaps.winner"),
 
+    RECAP_WEBHOOK_TITLE("game.recaps.winner-webhook-display.title"),
+    RECAP_WEBHOOK_DESCRIPTION("game.recaps.winner-webhook-display.description"),
+    RECAP_WEBHOOK_COLOR("game.recaps.winner-webhook-display.color"),
+
     INVALID_GAME("errors.args.invalid.game"),
     INVALID_MAP("errors.args.invalid.map"),
     INVALID_TEAM("errors.args.invalid.team"),
