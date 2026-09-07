@@ -19,7 +19,10 @@ import com.carrotguy69.tdm.game.other.DamageSource;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.Startup;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,6 +30,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
@@ -51,6 +55,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -67,20 +72,17 @@ public final class TDM extends JavaPlugin implements Listener {
 
     /*
     TODO:
-        - compass is tripping
-
-
-        - make sure same team players cant damage eachother
+        - respect damage
             - Powerup(location, [consumer] action)
             ideas:
-            - explosive arrow (creates explosion and changes blocks to nether and fire [temporarily, make sure to restore even if server shuts down])
-            - jump pack (slime block, launches player into the air in a direction to escape or trickshot)
-            - smoke grenade (blinds players within radius and puts particles)
-            - full health pickup (custom splash potion that heals all teammates (and self) in radius)
+            - ☑️ explosive arrow (creates explosion and changes blocks to nether and fire [temporarily, make sure to restore even if server shuts down])
+            - ☑️ jump pack (slime block, launches player into the air in a direction to escape or trickshot)
+            - ☑️ smoke grenade (blinds players within radius and puts particles)
+            - ☑️ full health pickup (custom splash potion that heals all teammates (and self) in radius)
             - a wither/blaze/flying thing that attacks enemy players (easy to kill but flying)
             - temporary (5 second (or until 20 damage is dealt OR explosion) physical shield item that blocks all attacks - use an action bar timer
             - grappling hook
-            - ortify (slowness 2 and resistance 2 effects) - use an armor icon and activate thru right click
+            - fortify (slowness 2 and resistance 2 effects) - use an armor icon and activate thru right click
             - homing missle (dont need to hold right click) take 2 seconds to lock and then shoot an instakill firework at them
             - fish bomb (spawns a lot salmon/carp/whatever they are [remove after 5 seconds])
             - simple ammo pickup
@@ -305,12 +307,107 @@ public final class TDM extends JavaPlugin implements Listener {
             attackerGP.setTemporaryStat("damage-dealt", damageDealt + e.getFinalDamage());
         }
 
+        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_BLAZE_HURT, 1.0f, 1.0f);
+        doBloodParticle(p, gp.getTeam().getRGBColor());
 
         double hp = p.getHealth() - e.getFinalDamage();
         if (hp <= 0) {
             e.setCancelled(true);
             game.kill(gp, true);
         }
+    }
+
+    private static void doBloodParticle(Player hitPlayer, int rgbColor) {
+        NamedTextColor color = NamedTextColor.nearestTo(TextColor.color(rgbColor));
+        Material dye = resolveDye(color);
+
+        int points = new Random().nextInt(5,8);
+        Location loc = hitPlayer.getLocation();
+        int radius = 1;
+
+        for (int i = 0; i < points; i++) {
+            double angle = 2 * Math.PI * i / points;
+            Location itemLoc = loc.clone().add(radius * Math.cos(angle), 1.7, radius * Math.sin(angle));
+
+            Item item = hitPlayer.getWorld().dropItem(itemLoc, new ItemStack(dye));
+            item.setVelocity(new Vector(0, 0, 0));
+            item.setPickupDelay(Integer.MAX_VALUE);
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    item.remove();
+                }
+            }.runTaskLater(plugin, new Random().nextInt(10, 25));
+        }
+    }
+
+    private static Material resolveDye(NamedTextColor color) {
+        Material result = Material.AIR;
+
+        switch (color.name().toUpperCase()) {
+            case "BLACK":
+                result = Material.BLACK_DYE;
+                break;
+
+            case "DARK_BLUE":
+                result = Material.BLUE_DYE;
+                break;
+
+            case "DARK_GREEN":
+                result = Material.GREEN_DYE;
+                break;
+
+            case "DARK_RED":
+                result = Material.RED_DYE;
+                break;
+
+            case "DARK_PURPLE":
+                result = Material.PURPLE_DYE;
+                break;
+
+            case "GOLD":
+                result = Material.ORANGE_DYE;
+                break;
+
+            case "GRAY":
+                result = Material.GRAY_DYE;
+                break;
+
+            case "DARK_GRAY":
+                result = Material.BLACK_DYE;
+                break;
+
+            case "BLUE":
+                result = Material.BLUE_DYE;
+                break;
+
+            case "GREEN":
+                result = Material.LIME_DYE;
+                break;
+
+            case "AQUA":
+                result = Material.CYAN_DYE;
+                break;
+
+            case "RED":
+                result = Material.RED_DYE;
+                break;
+
+            case "LIGHT_PURPLE":
+                result = Material.MAGENTA_DYE;
+                break;
+
+            case "YELLOW":
+                result = Material.YELLOW_DYE;
+                break;
+
+            case "WHITE":
+                result = Material.WHITE_DYE;
+                break;
+        }
+
+        return result;
     }
 
     @EventHandler

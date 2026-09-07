@@ -159,7 +159,7 @@ public class CustomItem implements GenericItem {
 
     @Override
     public String toString() {
-        return "MCItem{"
+        return "CustomItem{"
                 + "id=" + id + ","
                 + "displayName=" + customName  + ","
                 + "material=" + material.name()  + ","

@@ -1080,6 +1080,7 @@ public class Game {
         long despawnTicks = configYML.getLong("game.power-ups.despawn-ticks");
         int maxAmount = configYML.getInt("game.power-ups.max");
 
+        GenericItemRegistry.powerUpsByPlayer.clear();
         spawnPowerUps(maxAmount, despawnTicks);
 
 
@@ -1089,6 +1090,8 @@ public class Game {
                 if (gameState != GameState.ACTIVE) {
                     return;
                 }
+
+                PowerUpPickup.cleanLocations();
 
                 for (PowerUpPickup pickup : new ArrayList<>(PowerUpPickup.activePickupLocations)) {
 
@@ -1102,14 +1105,14 @@ public class Game {
                             continue;
                         }
 
-                            if (noInteractionTicks.contains(nearby.getUniqueId()))
-                                continue;
+                        if (noInteractionTicks.contains(nearby.getUniqueId()))
+                            continue;
 
-                            noInteractionTicks.add(nearby.getUniqueId());
+                        noInteractionTicks.add(nearby.getUniqueId());
 
-                            new BukkitRunnable() {public void run() {
-                                noInteractionTicks.remove(nearby.getUniqueId());
-                            }}.runTaskLater(plugin, 1L);
+                        new BukkitRunnable() {public void run() {
+                            noInteractionTicks.remove(nearby.getUniqueId());
+                        }}.runTaskLater(plugin, 1L);
 
                         PowerUpPickup toDelete = PowerUpPickup.getNearby(pickup.getLocation());
                         if (toDelete == null) {
@@ -1117,9 +1120,10 @@ public class Game {
                             continue;
                         }
 
-                        toDelete.despawn();
+                        boolean applied = pickup.applyTo(getPlayer(nearby));
 
-                        pickup.applyTo(getPlayer(nearby));
+                        if (applied)
+                            toDelete.despawn();
 
                         break;
                     }
@@ -1811,8 +1815,6 @@ public class Game {
 
         amount = Math.min(amount, Math.min(map.getPowerUpSpawns().size(), powerUps.size()));
 
-        Logger.log(String.format("Spawning %s powerups on %s.", amount, map.getID()));
-
         if (powerUpSpawns.isEmpty()) {
             return;
         }
@@ -1825,18 +1827,12 @@ public class Game {
             PowerUpPickup pickup = new PowerUpPickup(powerUp.getOriginalItem(), spawnLocation);
             pickup.spawn();
 
-            Logger.log(String.format("- Spawned %s", powerUp.getID()));
-
-
             taskIDs.add(new BukkitRunnable() {public void run() {
                 if (gameState != GameState.ACTIVE) {
                     return;
                 }
 
                 pickup.despawn();
-
-                Logger.log(String.format("- Despawned %s", powerUp.getID()));
-
 
                 spawnPowerUps(1, despawnTicks);
             }}.runTaskLater(plugin, despawnTicks).getTaskId());

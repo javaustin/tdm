@@ -47,6 +47,7 @@ com/carrotguy69/tdm/cmd/game/Freeze.class
 com/carrotguy69/tdm/game/Game$7.class
 com/carrotguy69/tdm/game/Game$13.class
 com/carrotguy69/tdm/tabCompleters/Game.class
+com/carrotguy69/tdm/TDM$3.class
 com/carrotguy69/tdm/game/Game$11$1.class
 com/carrotguy69/tdm/game/map/sources/StaticSource.class
 com/carrotguy69/tdm/game/GameTeam.class

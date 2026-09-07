@@ -35,9 +35,6 @@ public class MapFormatters {
         commonMap.put("player-health", String.format("%.1f", gp.getBukkitPlayer().getHealth()));
         commonMap.put("player-hp", String.format("%.1f", gp.getBukkitPlayer().getHealth()));
 
-        if (gp.kit == null) {
-            Logger.log("game player kit for %s is null".formatted(gp.getNetworkPlayer().getUsername()));
-        }
         commonMap.put("player-kit", gp.kit != null ? gp.kit.toUpperCase() : "");
         commonMap.put("player-kit-display", gp.kit != null ? gp.kit.toUpperCase() : "N/A");
 

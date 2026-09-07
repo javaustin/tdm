@@ -128,6 +128,7 @@ game:
 
   power-up:
     pickup: "&eYou picked up a{n} {display-name}!"
+    pickup-fail-action-bar: "&cYou already have this item!"
 
 
   # N/A

@@ -43,7 +43,7 @@ import static com.carrotguy69.cxyz.CXYZ.plugin;
 public class GunItem implements GenericItem {
 
     private final String id;
-    private String displayName;
+    private final String displayName;
     private final Material material;
     private final int magSize;
     private int currentAmmo;
@@ -257,7 +257,7 @@ public class GunItem implements GenericItem {
 
         float pitch = (float) (1.5f + (0.025 * damage)); // pitch will be based off of damage
 
-        shooter.getWorld().playSound(shooter, Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 1.0f, pitch);
+        shooter.getWorld().playSound(shooter, Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 0.5f, pitch);
 
         Location startLocation = shooter.getEyeLocation();
         Vector direction = startLocation.getDirection();

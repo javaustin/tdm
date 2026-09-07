@@ -19,7 +19,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -32,7 +31,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Map;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
-import static com.carrotguy69.cxyz.CXYZ.thisPort;
 
 public class PowerUpLoader {
 
@@ -86,6 +84,8 @@ public class PowerUpLoader {
             center.getWorld().spawnParticle(Particle.WHITE_ASH, center, 5000, 6, 2, 6);
             center.getWorld().spawnParticle(Particle.ASH, center, 5000, 6, 2, 6);
             center.getWorld().spawnParticle(Particle.EXPLOSION, center, 300, 6, 2, 6);
+            center.getWorld().spawnParticle(Particle.DUST, center, 500, 6, 2, 6, new Particle.DustOptions(Color.BLACK, 4));
+            center.getWorld().spawnParticle(Particle.DUST, center, 500, 6, 2, 6, new Particle.DustOptions(Color.GRAY, 4));
             center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
 
             for (Player p : center.getWorld().getNearbyEntitiesByType(Player.class, center, 8, 4, 8)) {
@@ -299,8 +299,6 @@ public class PowerUpLoader {
 
         healthPickup.on(PlayerInteractEvent.class, ((event, powerUp) -> {
 
-            Logger.log("on interact - health pickup");
-
             // todo: some bug does not demonstrate this registering an/or being executed. we get the physical item, not the custom implementation where healh is bul
 
             Player p = event.getPlayer();
@@ -308,11 +306,9 @@ public class PowerUpLoader {
             Game game = Game.getByPlayer(p);
 
             if (game == null) {
-                Logger.log("game null - return");
                 return;
             }
             if (!event.getAction().isRightClick()) {
-                Logger.log("not right click - return");
                 return;
             }
 
@@ -320,13 +316,9 @@ public class PowerUpLoader {
             ItemMeta handMeta = hand.getItemMeta();
 
             if (handMeta == null) {
-                Logger.log("hand meta null");
                 return;
             }
             if (!handMeta.getDisplayName().equalsIgnoreCase(f(healthPickup.getCustomName()))) {
-                Logger.log("not equal name");
-                Logger.log(handMeta.getDisplayName());
-                Logger.log(f(healthPickup.getCustomName()));
                 return;
             }
 

@@ -55,17 +55,17 @@
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>worldedit</id>
-            <url>https://maven.enginehub.org/repo/</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>worldedit</id>-->
+<!--            <url>https://maven.enginehub.org/repo/</url>-->
+<!--        </repository>-->
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>[26.1.2.build,)</version>
+            <version>26.2.build.121-stable</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -74,12 +74,12 @@
             <version>0.0</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/com.sk89q.worldedit/worldedit-bukkit -->
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
-            <version>7.2.10</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        &lt;!&ndash; Source: https://mvnrepository.com/artifact/com.sk89q.worldedit/worldedit-bukkit &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.sk89q.worldedit</groupId>-->
+<!--            <artifactId>worldedit-bukkit</artifactId>-->
+<!--            <version>7.2.10</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
     </dependencies>
 </project>

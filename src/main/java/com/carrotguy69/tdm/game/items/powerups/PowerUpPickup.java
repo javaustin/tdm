@@ -1,9 +1,13 @@
 package com.carrotguy69.tdm.game.items.powerups;
 
 
+import com.carrotguy69.cxyz.messages.MessageUtils;
 import com.carrotguy69.tdm.game.GamePlayer;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
+import com.carrotguy69.tdm.messages.MessageGrabber;
+import com.carrotguy69.tdm.messages.TDMMessageKey;
+import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -14,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
 import static com.carrotguy69.cxyz.CXYZ.plugin;
@@ -110,8 +115,7 @@ public class PowerUpPickup extends CustomItem {
         activePickupLocations.clear();
     }
 
-    public void applyTo(GamePlayer gp) {
-
+    public boolean applyTo(GamePlayer gp) {
 
         PowerUp powerUp = GenericItemRegistry.powerUps.get(originalItem.getID());
 
@@ -119,10 +123,15 @@ public class PowerUpPickup extends CustomItem {
             throw new RuntimeException(String.format("Pickup failed because powerUp with id='%s' was null!", originalItem.getID()));
         }
 
+        if (GenericItemRegistry.powerUpsByPlayer.containsEntry(gp.getUUID(), powerUp)) {
+            MessageUtils.sendActionBar(gp.getBukkitPlayer(), MessageGrabber.grab(TDMMessageKey.POWER_UP_PICKUP_FAIL, Map.of("", "")));
+            return false;
+        }
+
+        powerUp.getPickupAction().accept(gp);
         GenericItemRegistry.powerUpsByPlayer.put(gp.getUUID(), powerUp);
 
-        Logger.log(String.format("%s picked up PowerUp %s", gp.getNetworkPlayer().getUsername(), powerUp.getID()));
-        powerUp.getPickupAction().accept(gp);
+        return true;
     }
 
     public Location getLocation() {
@@ -144,6 +153,31 @@ public class PowerUpPickup extends CustomItem {
         }
 
         return closest;
+    }
+
+    public static void cleanLocations() {
+        if (activePickupLocations.size() <= 1) {
+            return;
+        }
+
+        PowerUpPickup lastPickup = activePickupLocations.getLast();
+
+        for (int i = activePickupLocations.size() - 1; i >= 0; i--) {
+            PowerUpPickup pickup = activePickupLocations.get(i);
+
+            if (pickup != lastPickup && pickup.getLocation().getX() == lastPickup.getLocation().getX() && pickup.getLocation().getZ() == lastPickup.getLocation().getZ()) {
+                Logger.warning("Active pickups are similar: " + pickup + ", " + lastPickup);
+                activePickupLocations.remove(i);
+            }
+        }
+
+    };
+
+    public String toString() {
+        return "PowerUpPickup{" +
+                "id=" + this.getID() + "," +
+                "location=" + this.getLocation() +
+                "}";
     }
 
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PowerUp extends CustomItem {
@@ -97,6 +98,11 @@ public class PowerUp extends CustomItem {
         for (PowerUpListener<?> raw : list) {
             ((PowerUpListener<T>) raw).handle(event, this);
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof PowerUp && Objects.equals(((PowerUp) other).getID(), this.getID());
     }
 
 }
