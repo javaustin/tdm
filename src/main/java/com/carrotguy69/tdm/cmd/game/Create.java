@@ -40,7 +40,7 @@ public class Create implements CommandExecutor {
         }
 
         String gameId = generateValidGameID();
-        GameMap gameMap = gameMaps.size() - 1 > 0 ? new ArrayList<>(gameMaps.values()).get(new Random().nextInt(0, gameMaps.size() - 1)) : new ArrayList<>(gameMaps.values()).getFirst();
+        GameMap gameMap = gameMaps.size() - 1 > 0 ? new ArrayList<>(gameMaps.values()).get(new Random().nextInt(0, gameMaps.size())) : new ArrayList<>(gameMaps.values()).getFirst();
         String defaultKit = null;
         NumberRange capacity = new NumberRange(2, 32);
 

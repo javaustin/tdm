@@ -353,29 +353,29 @@ public class Game {
 //        GlowUtils.resetGlowing(p);
 
         if (gameState == GameState.WAITING) {
-            spawnPlayer(p, lobbyMap.getSpawns().size() > 1 ? lobbyMap.getSpawns().get(new Random().nextInt(0, lobbyMap.getSpawns().size() - 1)) : lobbyMap.getSpawns().getFirst());
+            spawnPlayer(p, lobbyMap.getSpawns().size() > 1 ? lobbyMap.getSpawns().get(new Random().nextInt(0, lobbyMap.getSpawns().size())) : lobbyMap.getSpawns().getFirst());
 
             Map<String, Object> commonMap = MapFormatters.gamePlayerFormatter(gp);
             commonMap.putAll(MapFormatters.gameFormatter(this));
 
-            this.announce(
-                    MessageGrabber.grab(TDMMessageKey.LOBBY_JOIN),
-                    commonMap,
-                    List.of()
-            );
+            if (!isTransfer) {
+                this.announce(
+                        MessageGrabber.grab(TDMMessageKey.LOBBY_JOIN),
+                        commonMap,
+                        List.of()
+                );
 
-            if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.LOBBY_JOIN)) {
+                if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.LOBBY_JOIN)) {
 
-                if (!isTransfer) {
                     String desc = ChatColor.stripColor(f(formatPlaceholders(MessageGrabber.grab(TDMMessageKey.LOBBY_JOIN), commonMap)));
                     desc = desc.replace(gp.getNetworkPlayer().getDisplayName(), "**" + gp.getNetworkPlayer().getDisplayName() + "**");
 
                     DiscordEmbed embed = new DiscordEmbed().create("", desc, Color.YELLOW.asRGB());
 
                     new DiscordWebhook().setURL(TDM.WebhookSettings.url).addEmbed(embed).send();
+
+
                 }
-
-
             }
 
             runConfigCommands(configYML.getStringList("game.command-actions.on-lobby"), commonMap);
@@ -753,6 +753,7 @@ public class Game {
                 ;
 
         if (!mostViable.isEmpty()) {
+            Logger.log("A viable teammate spawn for %s is %s (%s)".formatted(gp.getNetworkPlayer().getDisplayName(), mostViable.getFirst(), mostViable.getFirst().getBukkitPlayer().getLocation()));
             return mostViable.getFirst();
         }
 
@@ -770,7 +771,7 @@ public class Game {
         GamePlayer viableSpawnPartner = getViableSpawn(gp);
 
         // Find a spawn preferably with another teammate (with the most health), otherwise use a random spawn.
-        Location spawn = viableSpawnPartner != null ? viableSpawnPartner.getBukkitPlayer().getLocation() : map.getSpawns().get(random.nextInt(0, map.getSpawns().size() - 1));
+        Location spawn = viableSpawnPartner != null ? viableSpawnPartner.getBukkitPlayer().getLocation() : map.getSpawns().get(random.nextInt(0, map.getSpawns().size()));
 
         spawnPlayer(gp.getBukkitPlayer(), spawn);
 
@@ -1267,6 +1268,8 @@ public class Game {
         if (!player.isAlive()) {
             return;
         }
+
+        GenericItemRegistry.powerUpsByPlayer.removeAll(player.getUUID());
 
         player.setAlive(false);
         player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
@@ -1780,7 +1783,9 @@ public class Game {
 
         map.isInUse = false;
 
-        GameMap newMap = nextMap.equals(map) ? gameMaps.values().stream().filter(m -> !Objects.equals(m, map)).findAny().orElse(map) : nextMap;
+        List<GameMap> possibleMaps = gameMaps.values().stream().filter(m -> m != map).toList();
+        GameMap newMap = possibleMaps.get(random.nextInt(0, possibleMaps.size()));
+
         String nextKit = this.defaultKit;
 
         List<GamePlayer> keepPlayers = this.players;
@@ -1917,9 +1922,17 @@ public class Game {
         }
 
         for (int i = 0; i < amount; i++) {
-            PowerUp powerUp = powerUps.get(new Random().nextInt(0, powerUps.size()));
+            PowerUp powerUp = powerUps.get(amount > 1 ? i : random.nextInt(powerUps.size()));
 
             Location spawnLocation = powerUpSpawns.size() - 1 > 0 ? powerUpSpawns.get(random.nextInt(0, powerUpSpawns.size())) : powerUpSpawns.getFirst();
+
+            for (int j = PowerUpPickup.activePickupLocations.size(); j > 0; j--) {
+                PowerUpPickup entry = PowerUpPickup.activePickupLocations.get(j - 1);
+
+                if (entry.getLocation().distance(spawnLocation) < 2) {
+                    PowerUpPickup.activePickupLocations.remove(entry);
+                }
+            }
 
             PowerUpPickup pickup = new PowerUpPickup(powerUp.getOriginalItem(), spawnLocation);
             pickup.spawn();

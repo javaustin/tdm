@@ -18,6 +18,7 @@ game:
       - game_leave
       - death
       - win_recap
+      - chat
 
   respawns:
     # Time (in seconds) a player must wait before respawning. Set this value to 0 or below to respawn immediately.
@@ -35,7 +36,7 @@ game:
     despawn-ticks: 1200
 
     # What should be the maximum amount of PowerUp(s) on the map at once?
-    max: 3
+    max: 5
 
   click-actions:
     # Execute commands upon right or left-clicking with an item in the hand.

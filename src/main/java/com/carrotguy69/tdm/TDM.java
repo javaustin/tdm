@@ -141,7 +141,8 @@ public final class TDM extends JavaPlugin implements Listener {
             GAME_JOIN,
             GAME_LEAVE,
             DEATH,
-            WIN_RECAP
+            WIN_RECAP,
+            CHAT
         }
     }
 
@@ -193,7 +194,7 @@ public final class TDM extends JavaPlugin implements Listener {
             game = new Game(
                     Create.generateValidGameID(),
                     gameMaps.size() - 1 > 0
-                            ? new ArrayList<>(gameMaps.values()).get(new Random().nextInt(0, gameMaps.size() - 1))
+                            ? new ArrayList<>(gameMaps.values()).get(new Random().nextInt(0, gameMaps.size()))
                             : new ArrayList<>(gameMaps.values()).getFirst(),
                     new NumberRange(2, 32),
                     null

@@ -48,6 +48,8 @@ public class PowerUpPickup extends CustomItem {
 
     public void spawn() {
 
+        Logger.log("Spawned " + this.getID() + " at" + this.getLocation());
+
         // Remove previous power up if somehow not cleared
         for (Entity en : location.getWorld().getNearbyEntities(location, 2, 2, 2)) {
             if (en.getType() == EntityType.ARMOR_STAND || en.getType() == EntityType.ITEM_DISPLAY) {
