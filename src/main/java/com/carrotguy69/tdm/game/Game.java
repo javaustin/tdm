@@ -69,17 +69,8 @@ import static com.carrotguy69.cxyz.CXYZ.f;
 import static com.carrotguy69.cxyz.CXYZ.msgYML;
 import static com.carrotguy69.cxyz.CXYZ.random;
 import static com.carrotguy69.cxyz.messages.MessageUtils.formatPlaceholders;
-import static com.carrotguy69.tdm.TDM.configYML;
-import static com.carrotguy69.tdm.TDM.gameIDMap;
-import static com.carrotguy69.tdm.TDM.gameMaps;
-import static com.carrotguy69.tdm.TDM.gameScoreboardLines;
-import static com.carrotguy69.tdm.TDM.lobbyMap;
-import static com.carrotguy69.tdm.TDM.lobbyScoreboardLines;
-import static com.carrotguy69.tdm.TDM.messagesYML;
-import static com.carrotguy69.tdm.TDM.noInteractionTicks;
-import static com.carrotguy69.tdm.TDM.plugin;
-import static com.carrotguy69.tdm.TDM.scoreboardsEnabled;
 
+import static com.carrotguy69.tdm.TDM.*;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.COMMAND_DELETE_GAME_FADE_IN_TICKS;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.COMMAND_DELETE_GAME_FADE_OUT_TICKS;
 import static com.carrotguy69.tdm.messages.TDMMessageKey.COMMAND_DELETE_GAME_STAY_TICKS;
@@ -1912,6 +1903,11 @@ public class Game {
     }
 
     public void spawnPowerUps(int amount, long despawnTicks) {
+
+        if (!powerUpEnabled) {
+            return;
+        }
+
         List<PowerUp> powerUps = new ArrayList<>(GenericItemRegistry.powerUps.values());
         List<Location> powerUpSpawns = map.getPowerUpSpawns();
 

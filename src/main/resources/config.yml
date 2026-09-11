@@ -32,6 +32,9 @@ game:
     default-gamemode: adventure
 
   power-ups:
+    # Should the PowerUp system be enabled for games?
+    enabled: true
+
     # How long should a PowerUp stay spawned before being removed or replaced? (1 second = 20 ticks)
     despawn-ticks: 1200
 

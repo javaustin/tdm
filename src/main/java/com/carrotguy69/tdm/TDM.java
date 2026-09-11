@@ -73,6 +73,7 @@ public final class TDM extends JavaPlugin implements Listener {
     TODO:
         - respect armor when damaging player
         - think about the aesthetics of the death lifecycle when a player is killed by quitting the game (which results in the other team leaving)
+        - players should be team colored in tab - figure out a smart way to override the CXYZ system
 
             - Powerup(location, [consumer] action)
             ideas:
@@ -122,6 +123,8 @@ public final class TDM extends JavaPlugin implements Listener {
     public static String defaultKit;
 
     public static List<UUID> noInteractionTicks = new ArrayList<>();
+
+    public static boolean powerUpEnabled;
 
     public static class WebhookSettings {
         public static boolean enabled = false;

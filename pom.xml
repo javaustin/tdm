@@ -74,12 +74,5 @@
             <version>0.0</version>
             <scope>provided</scope>
         </dependency>
-<!--        &lt;!&ndash; Source: https://mvnrepository.com/artifact/com.sk89q.worldedit/worldedit-bukkit &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.sk89q.worldedit</groupId>-->
-<!--            <artifactId>worldedit-bukkit</artifactId>-->
-<!--            <version>7.2.10</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
     </dependencies>
 </project>

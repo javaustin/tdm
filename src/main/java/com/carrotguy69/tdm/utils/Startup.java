@@ -102,6 +102,8 @@ public class Startup {
 
         WebhookSettings.enabled = configEnabled && WebhookSettings.url != null && !WebhookSettings.eventsLogged.isEmpty();
 
+        powerUpEnabled = configYML.getBoolean("game.power-ups.enabled");
+
         return;
     }
 
