@@ -1,0 +1,277 @@
+auto-join:
+  enabled: true    # If this is enabled, players that join the (server or world depending on scope) will automatically be added to a TDM game.
+  scope: server    # Scope
+                   #   server: Any player who joins the server will be automatically added
+                   #   world: Any player who joins the world will be automatically added
+
+game:
+
+  # Send game info to a discord webhook
+  webhook:
+    enabled: true
+    url: ""
+
+    log-events:
+      - lobby_join
+      - lobby_leave
+      - game_join
+      - game_leave
+      - death
+      - win_recap
+      - chat
+
+  respawns:
+    # Time (in seconds) a player must wait before respawning. Set this value to 0 or below to respawn immediately.
+    respawn-seconds: 3
+
+  misc:
+    # Should new players be allowed to join during an active game?
+    allow-join-during-game: true
+
+    # Default gamemode used for active players (spectators excluded).
+    default-gamemode: adventure
+
+  power-ups:
+    # Should the PowerUp system be enabled for games?
+    enabled: true
+
+    # How long should a PowerUp stay spawned before being removed or replaced? (1 second = 20 ticks)
+    despawn-ticks: 1200
+
+    # What should be the maximum amount of PowerUp(s) on the map at once?
+    max: 5
+
+  click-actions:
+    # Execute commands upon right or left-clicking with an item in the hand.
+    #    item: a Minecraft item
+    #    click-type: [RIGHT_CLICK, LEFT_CLICK, ANY]
+    #    actions: Command actions executed from the console.
+
+    red-wool:
+      click-type: RIGHT_CLICK
+      actions:
+        - sudo {player} tdm team join red -s
+
+    blue-wool:
+      click-type: RIGHT_CLICK
+      actions:
+        - sudo {player} tdm team join blue -s
+
+    gray-dye:
+      click-type: RIGHT_CLICK
+      actions:
+        - sudo {player} tdm ready true
+        - "minecraft:item replace entity {player} hotbar.7 with minecraft:lime_dye[minecraft:custom_name=[{\"text\":\"Ready\",\"italic\":false,\"color\":\"green\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"yellow\"}]]] 1"
+
+    lime-dye:
+      click-type: RIGHT_CLICK
+      actions:
+        - sudo {player} tdm ready false
+        - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"white\"}]]] 1"
+
+    chest:
+      click-type: RIGHT_CLICK
+      actions:
+        - pa open kit-selector {player}
+
+  command-actions:
+    # Execute console commands upon common game events.
+    # Leaving a list empty will execute no commands.
+    # Commands should NOT begin with "/"
+
+    on-lobby:
+      # Available placeholders: {player}, {game}
+      # NOT A LOOP! Runs for individual players in the lobby if they newly join.
+      - "minecraft:item replace entity {player} hotbar.1 with minecraft:chest[minecraft:custom_name=[{\"text\":\"Kit Selector\",\"italic\":false,\"color\":\"light_purple\"}],lore=[[{\"text\":\"Right click to select a kit\",\"italic\":false,\"color\":\"yellow\"}]],enchantment_glint_override=true] 1"
+      - "minecraft:item replace entity {player} hotbar.3 with minecraft:red_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"RED\",\"bold\":true,\"italic\":false,\"color\":\"red\"}]] 1"
+      - "minecraft:item replace entity {player} hotbar.5 with minecraft:blue_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"BLUE\",\"bold\":true,\"italic\":false,\"color\":\"blue\"}]] 1"
+      - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status. If all players are ready, the lobby countdown timer will be skipped.\",\"italic\":false,\"color\":\"white\"}]]] 1"
+
+    on-prep:
+      # Available placeholders: {game}
+      # NOT A LOOP! Runs ONLY one time while the arena is prepped and players are spawned.
+      - "difficulty hard"
+      - "gamerule locator_bar false"
+      - "gamerule send_command_feedback false"
+      - "gamerule command_block_output false"
+      - "gamerule show_advancement_messages false"
+      - "gamerule show_death_messages false"
+
+    on-start:
+      # Available placeholders: {player}, {game}
+      # Runs once for every player after game completely starts. Runs again for individual players if they newly join.
+      - "effect clear {player}"
+      - "effect give {player} minecraft:speed infinite 1 true"
+
+    on-death:
+      # Available placeholders: {player}, {game}
+      # Runs once for a single players' death
+      -
+
+    on-kill:
+      # Available placeholders: {attacker}, {player}
+
+      # Runs once for a players' death and involves the attacker.
+      # [!] Beware of duplicate commands. The command actions in on-death will also run during a kill.
+      - "heal {attacker}"
+      - "show {attacker} -actionBar &6+ 5 coins (kill)"
+      - "coins add 5 {attacker}"
+
+    on-win:
+      # Available placeholders {player}, {game}
+
+      # Runs once for every player on the winning team.
+      - "effect clear {player} minecraft:speed"
+      - "show {attacker} -actionBar &6+ 10 coins (win)"
+      - "coins add 10 {attacker}"
+
+    on-lose:
+      # Available placeholders {player}, {game}
+
+      # Runs once for every player on any losing team.
+      - "effect clear {player} minecraft:speed"
+
+  teams:
+    # There are two teams used in TDM games.
+    # id            -    The raw id of the team, not displayed in game. Used for lookup in commands.
+    # display-name  -    The display name of the team. Displayed in chat and menus.
+
+    # Note: Team colors are derived from the display name ("&c" -> #FF5555).
+
+    team-1: # <-- Do NOT modify the top key.
+      id: "red"
+      display-name: "&c&lRED "
+
+    team-2: # <-- Do NOT modify the top key.
+      id: "blue"
+      display-name: "&9&lBLUE "
+
+    # Set this value to true if you want the plugin to spawn in team-colored armor for each player.
+    use-armor: true
+
+  timers:
+    # Seconds players wait in the lobby before being moved into the arena.
+    lobby-countdown: 30
+
+    # Seconds players wait before the game officially begins.
+    game-countdown: 10
+
+    # Maximum game duration in seconds from the start until the end.
+    game-end: 600
+
+
+scoreboards:
+  # Enables or disables scoreboards entirely
+  enabled: true
+
+  # Scoreboards do not use the CXYZ message parser, so you can't use click/hover actions, but placeholders values are still supported.
+  # Minecraft scoreboards cannot contain duplicate values. You can use color codes (i.e.: "&a", "&6") for unique blank separators.
+
+  lobby:
+    # The effective scoreboard for a non-active game (waiting in lobby).
+
+    - "&e&lTDM" # The first entry of this list will become the scoreboard title
+    - "&7{player-date-short}"
+    - "&7{player-time}"
+    - "&0"
+    - "&eYou are on &f{player-team-prefix-display}"
+    - "&1"
+    - "&eRank: {player-rank-prefix-display}"
+    - "&2"
+    - "&eKills: &f{player-stat-tdm-lifetime-kills} &7(#{player-stat-tdm-lifetime-kills-ranking})"
+    - "&eWins: &f{player-stat-tdm-lifetime-wins} &7(#{player-stat-tdm-lifetime-wins-ranking})"
+    - "&3"
+    - "&e{game-next-event}: &f{game-next-event-time}"
+    - "&4"
+    - "&b&l/discord"
+    - "&6cerrot.xyz"
+
+  game:
+    # The effective scoreboard for an active game.
+
+    - "&e&lTDM"
+    - "&7{player-date-short}"
+    - "&7{player-time-short}"
+    - "&1"
+    - "&eYou are on {player-team-prefix}"
+    - "&2"
+    - "{team-1-prefix-display}: &f{team-1-score}/{game-winning-kills}"
+    - "{team-2-prefix-display}: &f{team-2-score}/{game-winning-kills}"
+    - "&3"
+    - "&e{game-next-event}: &f{game-next-event-time}"
+    - "&4"
+    - "&eMap: &f{game-map}"
+    - "&5"
+    - "&b&l/discord"
+    - "&6cerrot.xyz"
+
+discord-leaderboards:
+
+  top-killers:
+    settings:
+      stat-key: "tdm-lifetime-kills" # As stored in the CXYZ plugin ("tdm-kills" or "tdm-wins").
+      entry-format: "**{player}**: {player-stat-tdm-lifetime-kills}"
+      separator: "\n{i}.)) "
+      limit: 10
+
+    webhook:
+      webhook-url: "https://discordapp.com/api/webhooks/1547866577859518596/rTlUCshZi6kHEDR1E5_GdVajNXTYPsFszhwicv8ZFySDOAMknDlEvGc6bLRl5EFat-jN"
+
+      content: ""
+      embeds:
+        - title: "TDM Top Killers"
+          description: "{leaderboard}"
+          color: 938183
+
+          title-url: ""
+          thumbnail-url: ""
+          image-url: ""
+
+          timestamp: ""
+
+          author:
+            name: ""
+            url: ""
+            icon-url: ""
+
+          footer:
+            text: "Last updated on {timestamp}"
+            icon-url: ""
+
+      edit-mode: true
+      message-url: "https://discord.com/channels/1238973352144666737/1241447347880333342/1547888922665816097"
+
+
+  top-winners:
+    settings:
+      stat-key: "tdm-lifetime-wins" # As stored in the CXYZ plugin ("tdm-kills" or "tdm-wins").
+      entry-format: "**{player}**: {player-stat-tdm-lifetime-wins}"
+      separator: "\n{i}.)) "
+      limit: 10
+
+    webhook:
+      webhook-url: "https://discordapp.com/api/webhooks/1547866577859518596/rTlUCshZi6kHEDR1E5_GdVajNXTYPsFszhwicv8ZFySDOAMknDlEvGc6bLRl5EFat-jN"
+
+      content: ""
+      embeds:
+        - title: "TDM Top Winners"
+          description: "{leaderboard}"
+          color: 938183
+
+          title-url: ""
+          thumbnail-url: ""
+          image-url: ""
+
+          timestamp: ""
+
+          author:
+            name: ""
+            url: ""
+            icon-url: ""
+
+          footer:
+            text: "Last updated on {timestamp}"
+            icon-url: ""
+
+      edit-mode: true
+      message-url: "https://discord.com/channels/1238973352144666737/1241447347880333342/1547888787709890573"

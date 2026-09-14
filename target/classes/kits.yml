@@ -1,0 +1,342 @@
+kits:
+  # Slot Guide
+  #   Hotbar:       0  ->  8       (left -> right)
+  #   Inventory:    9  ->  35      (left/up -> right/down)
+  #   Armor:        -1 ->  -4      (top -> down)
+  #       - helmet = -1
+  #       - chest = -2
+  #       - leggings = -3
+  #       - boots = -4
+
+  default-kit: rookie
+
+  rookie:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: rifle
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: arrow
+      slot: 7
+
+  scout:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: shotgun
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: arrow
+      slot: 7
+
+    - id: chain-legs
+      slot: -3
+
+    - id: chain-boots
+      slot: -4
+
+
+  heavy:
+    - id: stone
+      slot: 0
+
+    - id: machine-gun
+      slot: 1
+
+    - id: tracker
+      slot: 8
+
+    - id: diamond-legs
+      slot: -3
+
+    - id: diamond-boots
+      slot: -4
+
+
+  sniper:
+    - id: dagger
+      slot: 0
+
+    - id: bow
+      slot: 1
+
+    - id: sniper
+      slot: 2
+
+    - id: tracker
+      slot: 8
+
+    - id: 2-arrows
+      slot: 7
+
+    - id: iron-boots
+      slot: -4
+
+mc-items:
+  # Items in this section have no custom behavior. They will appear as basic Minecraft items.
+
+  dagger:
+    name: "&bDagger"
+    material: IRON_SWORD
+    amount: 1
+    lore:
+      - "&4Slay your enemies at close range"
+    enchants:
+      - id: SHARPNESS
+        level: 1
+
+  stone:
+    material: STONE_SWORD
+
+  bow:
+    name: "&bOne-Shot Bow"
+    material: BOW
+    amount: 1
+    lore:
+      - "&6Enemies shot by this bow are killed instantly"
+    enchants:
+      - id: POWER
+        level: 100
+
+  arrow:
+    material: ARROW
+    # It's okay to leave these blank
+
+  2-arrows:
+    material: ARROW
+    amount: 2
+
+  chain-legs:
+    material: CHAINMAIL_LEGGINGS
+
+  chain-boots:
+    material: CHAINMAIL_BOOTS
+
+  diamond-legs:
+    material: DIAMOND_LEGGINGS
+
+  diamond-boots:
+    material: DIAMOND_BOOTS
+
+  iron-boots:
+    material: IRON_BOOTS
+
+guns:
+
+  rifle:
+    name: "&dBasic rifle"
+    material: WOODEN_HOE
+    magazine-size: 8
+    starting-ammo: 8
+    projectiles: 1
+    vertical-spread: 0.5
+    horizontal-spread: 0
+    fire-rate-per-second: 2.1
+    reload-time-seconds: 1.5
+    damage: 4.5
+    range: 75
+    lore:
+      -
+    enchants:
+      -
+
+  sniper:
+    name: "&dSniper rifle"
+    material: IRON_HOE
+    magazine-size: 4
+    starting-ammo: 4
+    projectiles: 1
+    vertical-spread: 0
+    horizontal-spread: 0
+    fire-rate-per-second: 0.6
+    reload-time-seconds: 4
+    damage: 20
+    range: 100
+    lore:
+      -
+    enchants:
+      -
+
+  machine-gun:
+    name: "&dMachine Gun"
+    material: NETHERITE_HOE
+    magazine-size: 16
+    starting-ammo: 16
+    projectiles: 1
+    vertical-spread: 1.3
+    horizontal-spread: 1
+    fire-rate-per-second: 12
+    reload-time-seconds: 2.2
+    damage: 3.2
+    range: 50
+    lore:
+      -
+    enchants:
+      -
+
+  shotgun:
+    name: "&dShotgun"
+    material: IRON_SHOVEL
+    magazine-size: 3
+    starting-ammo: 3
+    projectiles: 10
+    vertical-spread: 1.5
+    horizontal-spread: 2
+    fire-rate-per-second: 5
+    reload-time-seconds: 2.2
+    damage: 2.5 # Damage is counted PER PROJECTILE
+    range: 25
+    lore:
+      -
+    enchants:
+      -
+
+
+custom-items:
+
+  # POWER_UP items have to be implemented using the GenericItemRegistry class.
+
+  explosive-arrow:
+    name: "&eExplosive Arrow"
+    material: ARROW
+    custom-type: power_up
+    enchants:
+      - id: FLAME
+        level: 1
+    lore:
+      - "Use your bow with this explosive arrow to create an explosion wherever the arrow lands!"
+
+  jump-pack:
+    name: "&bJump Pack"
+    material: WIND_CHARGE
+    custom-type: power_up
+    enchants:
+      - id: GLINT # An invalid enchantment name as the sole enchant will result in an enchant glint being applied to the object.
+        level: 0
+    lore:
+      - "Double tap your space bar to jump away from danger!"
+
+  smoke-bomb:
+    name: "&x&F&F&C&8&C&8S&x&F&F&C&6&C&1m&x&F&F&C&4&B&9o&x&F&F&C&2&B&2k&x&F&F&C&0&A&Ae &x&F&F&B&C&9&BB&x&F&F&B&9&9&4o&x&F&F&B&7&8&Cm&x&F&F&B&5&8&5b"
+    material: SNOWBALL
+    custom-type: power_up
+    enchants:
+      - id: GLINT
+        level: 1
+    lore:
+      - "Creates a cloud of smoke that blinds nearby enemy players"
+
+  health-pickup:
+    name: "&x&D&E&2&7&2&7H&x&E&1&2&B&3&0e&x&E&4&2&F&3&9a&x&E&6&3&2&4&2l&x&E&9&3&6&4&Bt&x&E&C&3&A&5&4h &x&F&1&4&1&6&5P&x&F&4&4&5&6&Ei&x&F&7&4&9&7&7c&x&F&A&4&D&8&0k&x&F&C&5&0&8&9u&x&F&F&5&4&9&2p"
+    material: RED_DYE
+    custom-type: power_up
+    enchants:
+      - id: GLINT
+        level: 1
+    lore:
+      - "Right click to fully heal yourself!"
+#
+#  drone:
+#    name: "&cDrone"
+#    material: BLAZE_SPAWN_EGG
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Right click to spawn a blaze which flies around the map and fires projectiles at enemies!"
+#
+#  shield:
+#    name: "&dShield"
+#    material: SHIELD
+#    custom-type: power_up
+#    enchants:
+#      - id: UNBREAKING
+#        level: 3
+#    lore:
+#      - "Temporarily blocks all damage from enemies!"
+#
+#  grappling-hook:
+#    name: "&aGrapple Hook"
+#    material: FISHING_ROD
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Hook onto objects and fly around the map."
+#
+#  fortify:
+#    name: "&dFortify"
+#    material: NETHERITE_CHESTPLATE
+#    custom-type: power_up
+#    enchants:
+#      - id: PROTECTION
+#        level: 4
+#    lore:
+#      - "Right click to apply Resistance II and Slowness II."
+#
+#  homing-missile:
+#    name: "&cHoming Missile"
+#    material: FIREWORK_ROCKET
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Right click to lock onto a target and fire an insta-kill firework."
+#
+#  fish-bomb:
+#    name: "&9Water Bomb"
+#    material: SPLASH_POTION
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Spawn the ocean"
+#    potion-data:
+#      - type: WATER
+#
+#  ammo-pickup:
+#    name: "&eAmmo Pickup"
+#    material: GOLD_NUGGET
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Gain ammo"
+#
+#  carpet-bomb:
+#    name: "&4Carpet Bomb"
+#    material: TNT
+#    custom-type: power_up
+#    enchants:
+#      - id: GLINT
+#        level: 1
+#    lore:
+#      - "Right click to target an area for a carpet bombing!"
+
+  basic-ammo:
+    name: "&dUniversal ammo"
+    material: GOLD_NUGGET
+    custom-type: ammo
+
+  tracker:
+    name: "&aPlayer tracker"
+    material: COMPASS
+    custom-type: player_tracker
