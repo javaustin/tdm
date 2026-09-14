@@ -1,6 +1,10 @@
 package com.carrotguy69.tdm.game;
 
+import com.carrotguy69.cxyz.messages.MessageUtils;
 import com.carrotguy69.cxyz.models.db.NetworkPlayer;
+import com.carrotguy69.tdm.TDM;
+import com.carrotguy69.tdm.messages.utils.MapFormatters;
+import com.carrotguy69.tdm.utils.Logger;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -13,6 +17,8 @@ import org.bukkit.scoreboard.Team;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.carrotguy69.cxyz.CXYZ.f;
 
 public class GamePlayer {
     private final UUID uuid;
@@ -27,6 +33,8 @@ public class GamePlayer {
     public GamePlayer(UUID uuid) {
         this.uuid = uuid;
         this.alive = true;
+
+        updateTabName();
     }
 
     public boolean isReady() {
@@ -63,6 +71,8 @@ public class GamePlayer {
 
     public void setTeam(GameTeam team) {
         this.team = team;
+
+        updateTabName();
     }
 
     public Map<String, Double> getTemporaryStat() {
@@ -79,6 +89,15 @@ public class GamePlayer {
 
     public Game getGame() {
         return Game.getByPlayer(this.getBukkitPlayer());
+    }
+
+    public void updateTabName() {
+        if (TDM.playerTabNameFormat != null)
+            this.getBukkitPlayer().setPlayerListName(f(MessageUtils.formatPlaceholders(TDM.playerTabNameFormat, MapFormatters.gamePlayerFormatter(this))));
+    }
+
+    public void clearTabName() {
+        this.getBukkitPlayer().setPlayerListName(null);
     }
 
     public void setGlowing() {

@@ -25,6 +25,8 @@ game:
     respawn-seconds: 3
 
   misc:
+    # The format of player names that appear in the tab list
+    player-tab-name-format: "{player-rank-color}{player-team-prefix}{player-team-color}{player-display-name}"
 
     # Default gamemode used for active players (spectators excluded).
     default-gamemode: adventure
@@ -156,7 +158,6 @@ game:
 
     # Maximum game duration in seconds from the start until the end.
     game-end: 600
-
 
 scoreboards:
   # Enables or disables scoreboards entirely

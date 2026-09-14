@@ -94,6 +94,8 @@ public class Startup {
             TDM.lobbyMap = lobbyMap;
         }
 
+        playerTabNameFormat = configYML.getString("game.misc.player-tab-name-format");
+
         GlowUtils.SCOREBOARD = Bukkit.getScoreboardManager().getMainScoreboard();
 
         boolean configEnabled = configYML.getBoolean("game.webhook.enabled");
