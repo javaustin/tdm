@@ -117,8 +117,6 @@ public class Game {
 
     public Game(String id, GameMap map, NumberRange gameCapacity, String defaultKit) {
 
-        LeaderboardUpdater.update();
-
         this.gameID = id.toLowerCase();
 
         TDM.gameIDMap.put(gameID, this);
@@ -714,7 +712,6 @@ public class Game {
                 ;
 
         if (!mostViable.isEmpty()) {
-            Logger.log("A viable teammate spawn for %s is %s (%s)".formatted(gp.getNetworkPlayer().getDisplayName(), mostViable.getFirst(), mostViable.getFirst().getBukkitPlayer().getLocation()));
             return mostViable.getFirst();
         }
 
@@ -1829,6 +1826,8 @@ public class Game {
 
     public void delete(boolean isTransfer) {
         // Send players to lobby and cancel tasks
+
+        LeaderboardUpdater.update();
 
         this.cancelAllTasks();
 

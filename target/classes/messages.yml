@@ -48,7 +48,7 @@ game:
   join: "{player-rank-prefix}{player-rank-color}{player-display-name} &ejoined the game."
   leave: "{player-rank-prefix}{player-rank-color}{player-display-name} &eleft the game."
 
-  chat-webhook: "**{player-team-prefix} {player-display-name}**: {content}"
+  chat-webhook: "**{player-team-prefix}{player-display-name}**: {content}"
   join-webhook: "**{player-display-name}** joined the game."
   leave-webhook: "**{player-display-name}** left the game."
 
@@ -94,10 +94,10 @@ game:
         explosive: "&e{player-team-color}{player-display-name} &ewas blown up by {attacker-team-color}{attacker}!"
         default: "&e{player-team-color}{player-display-name} &edied!"
 
-        melee-webhook: "&e{player-team-color}{player-display-name} &ewas killed by {attacker-team-color}{attacker}!"
-        projectile-webhook: "&e{player-team-color}{player-display-name} &ewas shot by {attacker-team-color}{attacker}!"
-        explosive-webhook: "&e{player-team-color}{player-display-name} &ewas blown up by {attacker-team-color}{attacker}!"
-        default-webhook: "&e{player-team-color}{player-display-name} &edied!"
+        melee-webhook: "{player-display-name} was killed by {attacker}!"
+        projectile-webhook: "{player-display-name} was shot by {attacker}!"
+        explosive-webhook: "{player-display-name} was blown up by {attacker}!"
+        default-webhook: "{player-display-name} died!"
 
     message:
       team:

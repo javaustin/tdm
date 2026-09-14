@@ -41,6 +41,7 @@ com\carrotguy69\tdm\game\Game$5$1.class
 com\carrotguy69\tdm\cmd\game\Info.class
 com\carrotguy69\tdm\game\other\Durations.class
 com\carrotguy69\tdm\messages\utils\MapFormatters.class
+com\carrotguy69\tdm\utils\LeaderboardUpdater.class
 com\carrotguy69\tdm\game\Game$3.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$3.class
 com\carrotguy69\tdm\game\map\MapSource$Type.class

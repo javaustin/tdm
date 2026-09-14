@@ -96,7 +96,8 @@ public class Startup {
 
         GlowUtils.SCOREBOARD = Bukkit.getScoreboardManager().getMainScoreboard();
 
-        boolean configEnabled = configYML.getBoolean("game.webhook.enabled", false);
+        boolean configEnabled = configYML.getBoolean("game.webhook.enabled");
+
         WebhookSettings.url = configYML.getString("game.webhook.url");
         WebhookSettings.setEventsLogged(configYML.getStringList("game.webhook.log-events"));
 

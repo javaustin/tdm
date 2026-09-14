@@ -9,7 +9,7 @@ game:
   # Send game info to a discord webhook
   webhook:
     enabled: true
-    url: ""
+    url: "YOUR WEBHOOK URL HERE"
 
     log-events:
       - lobby_join
