@@ -82,6 +82,9 @@ game:
     on-lobby:
       # Available placeholders: {player}, {game}
       # NOT A LOOP! Runs for individual players in the lobby if they newly join.
+      - "clear {player}"
+      - "minecraft:xp set {player} 0 levels"
+      - "minecraft:xp set {player} 0 points"
       - "minecraft:item replace entity {player} hotbar.1 with minecraft:chest[minecraft:custom_name=[{\"text\":\"Kit Selector\",\"italic\":false,\"color\":\"light_purple\"}],lore=[[{\"text\":\"Right click to select a kit\",\"italic\":false,\"color\":\"yellow\"}]],enchantment_glint_override=true] 1"
       - "minecraft:item replace entity {player} hotbar.3 with minecraft:red_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"RED\",\"bold\":true,\"italic\":false,\"color\":\"red\"}]] 1"
       - "minecraft:item replace entity {player} hotbar.5 with minecraft:blue_wool[minecraft:custom_name=[{\"text\":\"Click to join \",\"italic\":false,\"color\":\"yellow\"},{\"text\":\"BLUE\",\"bold\":true,\"italic\":false,\"color\":\"blue\"}]] 1"
