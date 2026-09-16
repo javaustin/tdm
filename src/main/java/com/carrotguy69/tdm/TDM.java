@@ -476,22 +476,6 @@ public final class TDM extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onContainerOpen(InventoryOpenEvent e) {
-        Player p = (Player) e.getPlayer();
-
-        Game game = Game.getByPlayer(p);
-
-        if (game == null) {
-            return;
-        }
-
-        if ((e.getInventory().getType() != InventoryType.PLAYER && e.getInventory().getType() != InventoryType.CHEST)) {
-            e.setCancelled(true);
-        }
-
-    }
-
-    @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
 
