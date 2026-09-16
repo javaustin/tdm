@@ -1,7 +1,6 @@
 package com.carrotguy69.tdm.game;
 
 import com.carrotguy69.cxyz.CXYZ;
-import com.carrotguy69.cxyz.messages.MessageParser;
 import com.carrotguy69.cxyz.messages.MessageUtils;
 import com.carrotguy69.cxyz.models.config.channel.registry.ChannelFunction;
 import com.carrotguy69.cxyz.models.config.channel.registry.ChannelRegistry;
@@ -13,7 +12,6 @@ import com.carrotguy69.cxyz.utils.ItemUtils;
 import com.carrotguy69.cxyz.utils.NumberRange;
 import com.carrotguy69.cxyz.webhook.DiscordEmbed;
 import com.carrotguy69.cxyz.webhook.DiscordWebhook;
-import com.carrotguy69.cxyz.webhook.WebhookMessageParser;
 import com.carrotguy69.tdm.TDM;
 import com.carrotguy69.tdm.game.items.GenericItem;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
@@ -339,6 +337,7 @@ public class Game {
         originalPlayersSize = this.players.size();
         originalTeamsSize = this.teams.size();
 
+        gp.updateTabName();
         updateScoreboard();
     }
 
@@ -403,6 +402,8 @@ public class Game {
         originalPlayersSize = this.getPlayers().size();
         originalTeamsSize = this.teams.size();
 
+        if (gp.getBukkitPlayer() != null)
+            gp.clearTabName();
 
         updateScoreboard();
 

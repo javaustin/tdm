@@ -23,10 +23,7 @@ import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.Startup;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
@@ -124,6 +121,8 @@ public final class TDM extends JavaPlugin implements Listener {
 
     public static String defaultKit;
 
+    public static String playerTabNameFormat;
+
     public static List<UUID> noInteractionTicks = new ArrayList<>();
 
     public static boolean powerUpEnabled;
@@ -187,6 +186,8 @@ public final class TDM extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+
+        LeaderboardUpdater.update();
 
         Logger.info("See ya later!");
     }
@@ -345,7 +346,11 @@ public final class TDM extends JavaPlugin implements Listener {
         }
 
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_BLAZE_HURT, 1.0f, 1.0f);
-        doBloodParticle(p, gp.getTeam().getRGBColor());
+
+        new BukkitRunnable() {public void run() {
+            doBloodParticle(p, gp.getTeam().getRGBColor());
+        }}.runTaskLater(this, 1L);
+
 
         double hp = p.getHealth() - e.getFinalDamage();
         if (hp <= 0) {
@@ -355,19 +360,20 @@ public final class TDM extends JavaPlugin implements Listener {
     }
 
     private static void doBloodParticle(Player hitPlayer, int rgbColor) {
+
         NamedTextColor color = NamedTextColor.nearestTo(TextColor.color(rgbColor));
         Material dye = resolveDye(color);
 
         int points = new Random().nextInt(5,8);
         Location loc = hitPlayer.getLocation();
-        int radius = 1;
+        double radius = 0.5;
 
         for (int i = 0; i < points; i++) {
             double angle = 2 * Math.PI * i / points;
-            Location itemLoc = loc.clone().add(radius * Math.cos(angle), 1.7, radius * Math.sin(angle));
+            Location itemLoc = loc.clone().add(radius * Math.cos(angle), 1.8, radius * Math.sin(angle));
 
             Item item = hitPlayer.getWorld().dropItem(itemLoc, new ItemStack(dye));
-            item.setVelocity(new Vector(0, 0, 0));
+            item.setVelocity(hitPlayer.getVelocity());
             item.setPickupDelay(Integer.MAX_VALUE);
 
             new BukkitRunnable() {
