@@ -128,8 +128,7 @@ public class PowerUpPickup extends CustomItem {
             return false;
         }
 
-        powerUp.getPickupAction().accept(gp);
-        GenericItemRegistry.powerUpsByPlayer.put(gp.getUUID(), powerUp);
+        powerUp.applyTo(gp);
 
         return true;
     }

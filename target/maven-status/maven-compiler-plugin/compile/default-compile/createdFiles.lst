@@ -70,6 +70,7 @@ com\carrotguy69\tdm\game\GameTeam.class
 com\carrotguy69\tdm\messages\TDMMessageKey.class
 com\carrotguy69\tdm\game\Game$1.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpLoader.class
+com\carrotguy69\tdm\cmd\game\PowerUp.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$2.class
 com\carrotguy69\tdm\cmd\game\team\List.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpListener.class

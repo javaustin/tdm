@@ -60,13 +60,13 @@ game:
     gray-dye:
       click-type: RIGHT_CLICK
       actions:
-        - sudo {player} tdm ready true
+        - sudo {player} tdm ready true -s
         - "minecraft:item replace entity {player} hotbar.7 with minecraft:lime_dye[minecraft:custom_name=[{\"text\":\"Ready\",\"italic\":false,\"color\":\"green\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"yellow\"}]]] 1"
 
     lime-dye:
       click-type: RIGHT_CLICK
       actions:
-        - sudo {player} tdm ready false
+        - sudo {player} tdm ready false -s
         - "minecraft:item replace entity {player} hotbar.7 with minecraft:gray_dye[minecraft:custom_name=[{\"text\":\"Not Ready\",\"italic\":false,\"color\":\"red\"}],lore=[[{\"text\":\"Right click to toggle your ready status.\",\"italic\":false,\"color\":\"white\"}]]] 1"
 
     chest:
@@ -82,6 +82,7 @@ game:
     on-lobby:
       # Available placeholders: {player}, {game}
       # NOT A LOOP! Runs for individual players in the lobby if they newly join.
+      - "gamerule send_command_feedback false"
       - "clear {player}"
       - "minecraft:xp set {player} 0 levels"
       - "minecraft:xp set {player} 0 points"
@@ -116,9 +117,9 @@ game:
 
       # Runs once for a players' death and involves the attacker.
       # [!] Beware of duplicate commands. The command actions in on-death will also run during a kill.
-      - "heal {attacker}"
+      - "heal {attacker} -s"
       - "show {attacker} -actionBar &6+ 5 coins (kill)"
-      - "coins add 5 {attacker}"
+      - "coins add 5 {attacker} -s"
 
     on-win:
       # Available placeholders {player}, {game}
@@ -126,7 +127,7 @@ game:
       # Runs once for every player on the winning team.
       - "effect clear {player} minecraft:speed"
       - "show {attacker} -actionBar &6+ 10 coins (win)"
-      - "coins add 10 {attacker}"
+      - "coins add 10 {attacker} -s"
 
     on-lose:
       # Available placeholders {player}, {game}

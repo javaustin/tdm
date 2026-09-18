@@ -1,6 +1,7 @@
 package com.carrotguy69.tdm.game.items.powerups;
 
 import com.carrotguy69.tdm.game.GamePlayer;
+import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.game.items.classes.CustomItem;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
@@ -86,6 +87,12 @@ public class PowerUp extends CustomItem {
 
     public <T extends Event> void on(Class<T> eventClass, PowerUpListener<T> listener) {
         listeners.computeIfAbsent(eventClass, k -> new ArrayList<>()).add(listener);
+    }
+
+    public void applyTo(GamePlayer gp) {
+
+        this.getPickupAction().accept(gp);
+        GenericItemRegistry.powerUpsByPlayer.put(gp.getUUID(), this);
     }
 
     @SuppressWarnings("unchecked")

@@ -290,6 +290,7 @@ errors:
       general: "&cThis command is missing the required argument((s)): &f{missing-args}" # format w/ {missing-args}, {syntax}
 
     invalid:
+      power-up: "&cProvided power-up does not exist!"
       game: "[&cGame not found!](HOVER:Could not find a game with the id '{input}'.)"
       map: "&cMap not found!"
       lobby-map: "&cSorry! The lobby map cannot be used for TDM games."

@@ -23,19 +23,30 @@ import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.Startup;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.*;
+import org.apache.commons.logging.Log;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Explosive;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -51,6 +62,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -260,7 +272,7 @@ public final class TDM extends JavaPlugin implements Listener {
             return;
         }
 
-        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK || cause == EntityDamageEvent.DamageCause.PROJECTILE) {
+        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK || cause == EntityDamageEvent.DamageCause.PROJECTILE || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return;
         }
 
@@ -298,12 +310,19 @@ public final class TDM extends JavaPlugin implements Listener {
             reason = DamageSource.Reason.MELEE;
         }
 
-        else if (attackerEntity instanceof Projectile projectile) {
-            assert attackerEntity instanceof Arrow;
+        else if (attackerEntity instanceof Arrow projectile) {
 
             if (projectile.getShooter() instanceof Player) {
                 attacker = (Player) projectile.getShooter();
                 reason = DamageSource.Reason.PROJECTILE;
+            }
+        }
+
+        else if (attackerEntity instanceof TNTPrimed explosive) {
+
+            if (explosive.getSource() instanceof Player) {
+                attacker = (Player) explosive.getSource();
+                reason = DamageSource.Reason.EXPLOSIVE;
             }
         }
 
@@ -662,6 +681,81 @@ public final class TDM extends JavaPlugin implements Listener {
         for (PowerUp powerUp : powerUps) {
             powerUp.handleEvent(e);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onExplode(EntityExplodeEvent e) {
+
+        List<Block> tntBlocks = new ArrayList<>();
+
+        if (e.getEntityType() == EntityType.TNT) {
+
+            double scalar = e.blockList().size() < 50 ? 4 : e.blockList().size() < 150 ? 2 : 1;
+
+            for (int i = 0; i < e.blockList().size(); i++) {
+                Block originalBlock = e.blockList().get(i);
+
+                if (originalBlock.getType() == Material.TNT) {
+                    tntBlocks.add(originalBlock);
+                    continue;
+                }
+
+                FallingBlock fallingBlock = e.getEntity().getWorld().spawnFallingBlock(originalBlock.getLocation(), originalBlock.getBlockData());
+
+                Vector velocity = new Vector();
+
+                for (int m = 0; m < scalar; m++){
+                    for (int k = 0; k < 2; k++) {
+                        velocity = velocity.add(originalBlock.getLocation().toVector());
+                        velocity = velocity.add(Vector.getRandom().multiply(0.5));
+                        velocity = velocity.subtract(e.getEntity().getLocation().toVector());
+
+                        if (k == 1 && originalBlock.getY() <= e.getEntity().getLocation().getY()) {
+                            // When TNT is placed on the ground, we want blocks to fly upward.
+                            // Without this statement, blocks would only fly downward relative to the TNT position.
+                            velocity = velocity.multiply(new Vector(0, -1, 0));
+                        }
+
+                        velocity = velocity.normalize();
+
+                        velocity = velocity.multiply((1.0 / originalBlock.getLocation().distance(e.getEntity().getLocation())) * 1.5);
+
+                        fallingBlock.setVelocity(velocity);
+                        fallingBlock.setCancelDrop(true);
+
+                        // Try to teleport to air so blocks don't get stuck in ground
+
+                        Vector step = velocity.clone();
+
+                        if (step.lengthSquared() == 0) {
+                            return;
+                        }
+
+                        step.normalize();
+
+                        Location next = fallingBlock.getLocation().clone();
+
+                        for (int s = 0; s < 15; s++) {
+                            if (next.getBlock().getType().isBlock()) {
+                                next.add(step);
+                            }
+
+                            else {
+                                fallingBlock.teleport(next);
+                                break;
+                            }
+                        }
+
+                        fallingBlock.setVelocity(velocity);
+                    }
+                }
+
+            }
+        }
+
+        e.blockList().clear();
+        e.blockList().addAll(tntBlocks);
+
     }
 
 

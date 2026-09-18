@@ -20,7 +20,7 @@ public class Game implements TabCompleter {
 
         String baseNode = "tdm";
 
-        List<String> subcommands = new ArrayList<>(List.of("create", "delete", "freeze", "info", "join", "leave", "list", "ready", "setting", "team", "kit"));
+        List<String> subcommands = new ArrayList<>(List.of("create", "delete", "freeze", "info", "join", "leave", "list", "ready", "setting", "team", "kit", "powerup", "givepowerup"));
         List<String> options = new ArrayList<>(subcommands);
         List<String> results = new ArrayList<>();
 
@@ -57,6 +57,8 @@ public class Game implements TabCompleter {
                         ObjectUtils.getCasualBooleanOptions();
                 case "kit" ->
                         GenericItemRegistry.kits.keySet().stream().toList();
+                case "powerup", "givepowerup" ->
+                        GenericItemRegistry.powerUps.keySet().stream().toList();
                 default -> List.of();
             };
         }

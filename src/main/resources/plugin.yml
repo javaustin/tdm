@@ -49,6 +49,8 @@ permissions:
     default: op
   tdm.ready:
     default: true
+  tdm.powerup:
+    default: op
 
   tdm.team:
     default: true

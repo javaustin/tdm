@@ -18,6 +18,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -64,7 +65,6 @@ public class PowerUpLoader {
 
         explosiveArrow.on(ProjectileHitEvent.class, (e, po) -> {
 
-
             Location center = e.getEntity().getLocation();
             e.getEntity().remove();
 
@@ -81,42 +81,10 @@ public class PowerUpLoader {
 
             GamePlayer shooterGP = game.getPlayer(shooter);
 
-            center.getWorld().spawnParticle(Particle.WHITE_ASH, center, 5000, 6, 2, 6);
-            center.getWorld().spawnParticle(Particle.ASH, center, 5000, 6, 2, 6);
-            center.getWorld().spawnParticle(Particle.EXPLOSION, center, 300, 6, 2, 6);
-            center.getWorld().spawnParticle(Particle.DUST, center, 500, 6, 2, 6, new Particle.DustOptions(Color.BLACK, 4));
-            center.getWorld().spawnParticle(Particle.DUST, center, 500, 6, 2, 6, new Particle.DustOptions(Color.GRAY, 4));
-            center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 2f, 0.5f);
-
-            for (Player p : center.getWorld().getNearbyEntitiesByType(Player.class, center, 8, 4, 8)) {
-
-                GamePlayer hitGP = game.getPlayer(p);
-
-                if (hitGP.getTeam().getID().equalsIgnoreCase(shooterGP.getTeam().getID())) {
-                    continue;
-                }
-
-                double damage = 0;
-                double distance = p.getLocation().distance(center);
-
-                if (distance <= 4) {
-                    damage = 20;
-                }
-
-                else if (distance <= 6) {
-                    damage = 10;
-                }
-
-                else if (distance <= 8) {
-                    damage = 5;
-                }
-
-                DamageSource source = new DamageSource(shooterGP, DamageSource.Reason.EXPLOSIVE);
-                game.setLastDamageSource(hitGP, source);
-
-                p.damage(damage);
-            }
-
+            center.getWorld().spawn(center, TNTPrimed.class, tnt -> {
+                tnt.setFuseTicks(0);
+                tnt.setSource(shooterGP.getBukkitPlayer());
+            });
 
             new BukkitRunnable() {public void run() {
                 GenericItemRegistry.powerUpsByPlayer.remove(shooterGP.getUUID(), explosiveArrow);

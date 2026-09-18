@@ -142,6 +142,7 @@ public enum TDMMessageKey {
     RECAP_WEBHOOK_COLOR("game.recaps.winner-webhook-display.color"),
 
     INVALID_GAME("errors.args.invalid.game"),
+    INVALID_POWER_UP("errors.args.invalid.power-up"),
     INVALID_MAP("errors.args.invalid.map"),
     INVALID_TEAM("errors.args.invalid.team"),
     INVALID_LOOT_TABLE("errors.args.invalid.loot-table"),
