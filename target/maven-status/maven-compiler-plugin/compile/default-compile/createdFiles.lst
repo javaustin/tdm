@@ -11,6 +11,7 @@ com\carrotguy69\tdm\eventHandler\CoreChatHandler.class
 com\carrotguy69\tdm\game\map\MapSource.class
 com\carrotguy69\tdm\game\items\classes\MCItem.class
 com\carrotguy69\tdm\tabCompleters\Team.class
+com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$5.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$1.class
 com\carrotguy69\tdm\TDM$1.class
 com\carrotguy69\tdm\cmd\game\Kit.class
@@ -54,6 +55,7 @@ com\carrotguy69\tdm\cmd\Test.class
 com\carrotguy69\tdm\game\Game$2.class
 com\carrotguy69\tdm\cmd\game\team\_TeamSupercommand.class
 com\carrotguy69\tdm\game\GamePlayer.class
+com\carrotguy69\tdm\TDM$6.class
 com\carrotguy69\tdm\game\Game$9.class
 com\carrotguy69\tdm\game\Game$5.class
 com\carrotguy69\tdm\eventHandler\VanishHandler.class

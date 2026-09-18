@@ -82,7 +82,6 @@ game:
     on-lobby:
       # Available placeholders: {player}, {game}
       # NOT A LOOP! Runs for individual players in the lobby if they newly join.
-      - "gamerule send_command_feedback false"
       - "clear {player}"
       - "minecraft:xp set {player} 0 levels"
       - "minecraft:xp set {player} 0 points"
@@ -95,6 +94,8 @@ game:
       # Available placeholders: {game}
       # NOT A LOOP! Runs ONLY one time while the arena is prepped and players are spawned.
       - "difficulty hard"
+      - "/world tdm-world"
+      - "rg flag __global__ fire-spread deny"
       - "gamerule locator_bar false"
       - "gamerule send_command_feedback false"
       - "gamerule command_block_output false"
@@ -162,6 +163,11 @@ game:
 
     # Maximum game duration in seconds from the start until the end.
     game-end: 600
+
+  explosions:
+    destroy-blocks: false
+    use-falling-blocks: true
+    ignite-fire: true
 
 scoreboards:
   # Enables or disables scoreboards entirely

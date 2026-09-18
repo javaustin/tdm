@@ -248,6 +248,39 @@ custom-items:
         level: 1
     lore:
       - "Right click to fully heal yourself!"
+
+  team-buff:
+    name: "&eTeam Buff"
+    material: GOLDEN_APPLE
+    custom-type: power_up
+    enchants:
+      - id: GLINT
+        level: 1
+    lore:
+      - Heal the entire team
+
+  grapple-hook:
+    name: "&x&F&B&0&0&0&0G&x&F&B&0&7&0&0r&x&F&C&0&F&0&0a&x&F&C&1&6&0&0p&x&F&D&1&D&0&0p&x&F&D&2&5&0&0l&x&F&D&2&C&0&0e &x&F&E&3&3&0&0H&x&F&E&3&A&0&0o&x&F&F&4&2&0&0o&x&F&F&4&9&0&0k"
+    material: FISHING_ROD
+    custom-type: power_up
+    enchants:
+      - ID: GLINT
+        level: 1
+    lore:
+      - "Right click to launch yourself across the map!"
+
+  fish-bomb:
+    name: "&x&0&0&1&C&F&BF&x&0&0&3&8&F&Ci&x&0&0&5&5&F&Cs&x&0&0&7&1&F&Dh &x&0&0&8&E&F&DB&x&0&0&A&A&F&Eo&x&0&0&C&7&F&Em&x&0&0&E&3&F&Fb"
+    material: SPLASH_POTION
+    custom-type: power_up
+    enchants:
+      - id: GLINT
+        level: 1
+    lore:
+      - "Tell em to bring out the whole ocean!!"
+    potion-data:
+      - type: WATER
+
 #
 #  drone:
 #    name: "&cDrone"
@@ -268,17 +301,6 @@ custom-items:
 #        level: 3
 #    lore:
 #      - "Temporarily blocks all damage from enemies!"
-#
-#  grappling-hook:
-#    name: "&aGrapple Hook"
-#    material: FISHING_ROD
-#    custom-type: power_up
-#    enchants:
-#      - id: GLINT
-#        level: 1
-#    lore:
-#      - "Hook onto objects and fly around the map."
-#
 #  fortify:
 #    name: "&dFortify"
 #    material: NETHERITE_CHESTPLATE
@@ -299,17 +321,6 @@ custom-items:
 #    lore:
 #      - "Right click to lock onto a target and fire an insta-kill firework."
 #
-#  fish-bomb:
-#    name: "&9Water Bomb"
-#    material: SPLASH_POTION
-#    custom-type: power_up
-#    enchants:
-#      - id: GLINT
-#        level: 1
-#    lore:
-#      - "Spawn the ocean"
-#    potion-data:
-#      - type: WATER
 #
 #  ammo-pickup:
 #    name: "&eAmmo Pickup"

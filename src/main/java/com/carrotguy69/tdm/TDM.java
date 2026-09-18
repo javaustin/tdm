@@ -24,6 +24,7 @@ import com.carrotguy69.tdm.utils.Startup;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.apache.commons.logging.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -49,10 +50,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -700,6 +703,21 @@ public final class TDM extends JavaPlugin implements Listener {
                     continue;
                 }
 
+                if (configYML.getBoolean("game.explosions.ignite-fire")) {
+                    Block topBlock = originalBlock.getLocation().clone().add(0, 1, 0).getBlock();
+
+                    if (new Random().nextInt(4) == 3 && topBlock.getType().isAir()) {
+                        topBlock.setType(Material.FIRE);
+
+                        new BukkitRunnable() {public void run() {
+                            topBlock.setType(Material.AIR);
+                        }}.runTaskLater(this, new Random().nextInt(2, 7) * 20L);
+                    }
+                }
+
+                if (!configYML.getBoolean("game.explosions.use-falling-blocks"))
+                    continue;
+
                 FallingBlock fallingBlock = e.getEntity().getWorld().spawnFallingBlock(originalBlock.getLocation(), originalBlock.getBlockData());
 
                 Vector velocity = new Vector();
@@ -753,9 +771,32 @@ public final class TDM extends JavaPlugin implements Listener {
             }
         }
 
-        e.blockList().clear();
-        e.blockList().addAll(tntBlocks);
+        if (!configYML.getBoolean("game.explosions.destroy-blocks")) {
+            e.blockList().clear();
+            e.blockList().addAll(tntBlocks);
+        }
+    }
 
+    @EventHandler
+    public void onFish(PlayerFishEvent e) {
+        Player p = e.getPlayer();
+
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
+    }
+
+    @EventHandler
+    public void onPotionSplash(PotionSplashEvent e) {
+
+        if (!(e.getPotion().getShooter() instanceof Player p))
+            return;
+
+        Collection<PowerUp> powerUps = GenericItemRegistry.powerUpsByPlayer.get(p.getUniqueId());
+        for (PowerUp powerUp : powerUps) {
+            powerUp.handleEvent(e);
+        }
     }
 
 

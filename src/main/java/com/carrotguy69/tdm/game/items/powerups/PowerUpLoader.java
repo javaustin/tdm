@@ -1,13 +1,16 @@
 package com.carrotguy69.tdm.game.items.powerups;
 
+import com.carrotguy69.cxyz.cmd.ChatColor;
 import com.carrotguy69.cxyz.messages.MessageUtils;
+import com.carrotguy69.cxyz.utils.BroadcastUtils;
 import com.carrotguy69.tdm.TDM;
 import com.carrotguy69.tdm.game.Game;
 import com.carrotguy69.tdm.game.GamePlayer;
+import com.carrotguy69.tdm.game.GameTeam;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
-import com.carrotguy69.tdm.game.other.DamageSource;
 import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
+import com.carrotguy69.tdm.messages.utils.MapFormatters;
 import com.carrotguy69.tdm.utils.Logger;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -16,10 +19,13 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -29,7 +35,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.nio.file.LinkOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
 
@@ -41,6 +51,9 @@ public class PowerUpLoader {
         loadJumpPack();
         loadSmokeGrenade();
         loadHealthPickup();
+        loadGrappleHook();
+        loadTeamBuff();
+        loadFishBomb();
     }
 
     private static void loadExplosiveArrow() {
@@ -182,7 +195,6 @@ public class PowerUpLoader {
         }));
 
         jumpPack.on(PlayerInteractEvent.class, ((event, powerUp) -> {
-
             if (event.getAction().isRightClick() && event.getPlayer().getInventory().getItemInMainHand().getType() == jumpPack.getOriginalItem().getMaterial()) {
                 event.setCancelled(true);
             }
@@ -267,8 +279,6 @@ public class PowerUpLoader {
 
         healthPickup.on(PlayerInteractEvent.class, ((event, powerUp) -> {
 
-            // todo: some bug does not demonstrate this registering an/or being executed. we get the physical item, not the custom implementation where healh is bul
-
             Player p = event.getPlayer();
 
             Game game = Game.getByPlayer(p);
@@ -307,4 +317,112 @@ public class PowerUpLoader {
             }}.runTaskLater(TDM.plugin, 1);
         }));
     }
+
+    private static void loadGrappleHook() {
+        PowerUp grappleHook = GenericItemRegistry.powerUps.get("grapple-hook");
+
+        if (grappleHook == null) {
+            return;
+        }
+
+        grappleHook.setPickupAction(gp -> {
+            Player p = gp.getBukkitPlayer();
+
+            p.getInventory().addItem(grappleHook.toItemStack());
+
+            MessageUtils.sendParsedMessage(p, MessageGrabber.grab(TDMMessageKey.POWER_UP_PICKUP), Map.of("display-name", grappleHook.getCustomName(), "n", ""));
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0f);
+        });
+
+        grappleHook.on(PlayerFishEvent.class, (event, powerUp) -> {
+            Player p = event.getPlayer();
+
+            Game game = Game.getByPlayer(p);
+
+            if (game == null) {
+                return;
+            }
+
+            event.getHook().setVelocity(p.getLocation().getDirection().multiply(1.5));
+
+            Logger.log(event.getState().name());
+
+            if (event.getState() == PlayerFishEvent.State.REEL_IN || event.getState() == PlayerFishEvent.State.IN_GROUND) {
+                p.setVelocity(event.getHook().getLocation().toVector().subtract(p.getLocation().toVector()).normalize().multiply(3.0));
+
+                p.playSound(p, Sound.ENTITY_BLAZE_SHOOT, 1.0f, 2.0f);
+                MessageUtils.sendActionBar(p, f("&dWhoosh!"));
+            }
+        });
+    }
+
+    private static void loadTeamBuff() {
+        PowerUp teamBuff = GenericItemRegistry.powerUps.get("team-buff");
+
+        if (teamBuff == null) {
+            return;
+        }
+
+        teamBuff.setPickupAction(gp -> {
+
+            GameTeam gpTeam = gp.getTeam();
+
+            List<Player> players = gpTeam.getPlayers().stream().map(GamePlayer::getBukkitPlayer).toList();
+
+            for (Player p : players) {
+                p.addPotionEffect(PotionEffectType.ABSORPTION.createEffect(120 * 20, 0));
+                p.addPotionEffect(PotionEffectType.INSTANT_HEALTH.createEffect(0, 0));
+                p.addPotionEffect(PotionEffectType.REGENERATION.createEffect(5 * 20, 1));
+                p.setFoodLevel(20);
+
+                MessageUtils.sendParsedMessage(p, "{player-team-color}{player} picked up %s!".formatted(teamBuff.getCustomName()), MapFormatters.gamePlayerFormatter(gp));
+            }
+            BroadcastUtils.playSound(players, Sound.ENTITY_PLAYER_BURP, 1, 1.5f);
+        });
+    }
+
+    private static void loadFishBomb() {
+        PowerUp fishBomb = GenericItemRegistry.powerUps.get("fish-bomb");
+
+        if (fishBomb == null)
+            return;
+
+        fishBomb.setPickupAction(gp -> {
+            Player p = gp.getBukkitPlayer();
+
+            p.getInventory().addItem(fishBomb.toItemStack());
+
+            MessageUtils.sendParsedMessage(p, MessageGrabber.grab(TDMMessageKey.POWER_UP_PICKUP), Map.of("display-name", fishBomb.getCustomName(), "n", ""));
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0f);
+        });
+
+        fishBomb.on(PotionSplashEvent.class, (e, powerUp) -> {
+            Player p = (Player) e.getPotion().getShooter();
+
+            Location center = e.getPotion().getLocation();
+
+            List<EntityType> types = List.of(EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH);
+            for (int i = 0; i < 500; i++) {
+
+                EntityType type = types.get(new Random().nextInt(types.size()));
+                Class<? extends Entity> clazz = type.getEntityClass();
+
+                if (clazz == null) {
+                    throw new RuntimeException(String.format("Failed to spawn a fish (could not get class from EntityType %s)", type));
+                }
+
+                center.getWorld().spawn(center, clazz, fish -> {
+                    fish.setInvulnerable(true);
+                    fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "Fishhhh"));
+
+                    new BukkitRunnable() {public void run() {
+                        fish.remove();
+                    }}.runTaskLater(TDM.plugin, new Random().nextInt(7) * 20L);
+                });
+            }
+
+        });
+    }
+
+
 }

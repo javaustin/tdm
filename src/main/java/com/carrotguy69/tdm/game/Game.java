@@ -1261,65 +1261,6 @@ public class Game {
                 List.of()
         );
 
-        /*
-        There exists a message parser in CXYZ which takes an input text, as well as a map of placeholders, and outputs the text (wrapped in a Bukkit TextComponent for sending) with replaced placeholders.
-
-            String text = "{player} was killed by {attacker}"
-
-            MessageParser parser = new MessageParser(text, Map.of("player", "Steve", "attacker", "Alex"));
-
-            TextComponent tc = parser.toTextComponent();
-
-            player.spigot().sendMessage(tc);
-
-        With this model, there are a few static utility methods that do the same thing.
-
-            String before = "{player}"
-
-            String after = formatPlaceholders(before, Map.of("player", "Steve"));
-
-            System.out.println(after); // -> "Steve"
-
-        Now imagine we want to send a message to discord via a webhook. Imagine we have DiscordWebhook object.
-        We can build this webhook from a defined config section by using the utility method WebhookMessageParser.createWebhook(ConfigurationSection section, String fallbackURL, Map<String, Object> commonMap)
-
-        There is a general event called DEATH in which there are any number of different messages for:
-            - "{player} died"
-            - "{player} was shot by {attacker}"
-            - "{player} was killed by {attacker}"
-            - "{player} was blown up by {attacker}"
-
-        Since these are part of the same event, our preprocessing needs to fulfill any one of them. There may be other placeholders here written in the message that are contained in commonMap, we do not know.
-
-        Let's represent this as such:
-            String deathMessage; // Assume this is any one of those above messages, this is already determined beforehand.
-
-        The webhook needs to know which message was sent, so we can put the deathMessage in the commonMap.
-
-            commonMap.put("death-message", deathMessage);
-
-        We construct the webhook:
-            DiscordWebhook webhook = WebhookMessageParser.createWebhook(section, WebhookSettings.url, commonMap);
-
-            if (webhook != null)
-                webhook.send();
-
-        (Assume this is our input config)
-            webhook-message:
-                url: ...
-                content: "[!] {death-message}"
-
-        The webhook gets sent:
-            -> "{player} was shot by {attacker}"
-
-        Uh oh! These placeholders were unfulfilled because they were contained inside another placeholder. How do we fix this?
-
-        Ok, say when we put this deathMessage in, we pre-format it as such:
-            commonM
-
-        */
-
-
         if (TDM.WebhookSettings.enabled && TDM.WebhookSettings.eventsLogged.contains(TDM.WebhookSettings.Event.DEATH)) {
             unparsed = MessageGrabber.grab(TDMMessageKey.valueOf("DEATH_ANNOUNCEMENT_" + lastDamageSource.reason().name().toUpperCase() + "_WEBHOOK"));
 
