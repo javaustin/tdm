@@ -34,6 +34,7 @@ com\carrotguy69\tdm\TDM$2.class
 com\carrotguy69\tdm\game\items\powerups\PowerUpPickup.class
 com\carrotguy69\tdm\game\GameState.class
 com\carrotguy69\tdm\eventHandler\CoreChatHandler$1.class
+com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$6.class
 com\carrotguy69\tdm\game\items\GenericItem$Type.class
 com\carrotguy69\tdm\cmd\game\Delete.class
 com\carrotguy69\tdm\game\items\classes\GunItem$2.class
@@ -63,6 +64,7 @@ com\carrotguy69\tdm\game\items\managers\CustomItemManager.class
 com\carrotguy69\tdm\game\items\classes\GunItem$1.class
 com\carrotguy69\tdm\tabCompleters\Game.class
 com\carrotguy69\tdm\cmd\game\Freeze.class
+com\carrotguy69\tdm\game\items\powerups\PowerUpLoader$7.class
 com\carrotguy69\tdm\game\items\GenericItem$Enchant.class
 com\carrotguy69\tdm\TDM$3.class
 com\carrotguy69\tdm\game\Game.class

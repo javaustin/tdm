@@ -292,6 +292,7 @@ errors:
     invalid:
       power-up: "&cProvided power-up does not exist!"
       game: "[&cGame not found!](HOVER:Could not find a game with the id '{input}'.)"
+      game-state: "&cYou may not do this at this time!"
       map: "&cMap not found!"
       lobby-map: "&cSorry! The lobby map cannot be used for TDM games."
       team: "&cTeam not found!"

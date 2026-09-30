@@ -209,14 +209,15 @@ public class MapFormatters {
                                                                                                                     //         It's more accurate to have them named "game-team-..."
         }
 
-        GameTeam winningTeam = game.getLeadingTeam();
-        commonMap.putAll(cloneFormaterToNewKey(teamFormatter(winningTeam), "team", "winner-team"));
-        commonMap.putAll(cloneFormaterToNewKey(teamFormatter(winningTeam), "team", "game-winner-team"));
+        GameTeam winningTeam = game.winnerTeam;
+        GameTeam losingTeam = game.loserTeam;
 
-        GameTeam losingTeam = game.getNonLeadingTeam();
-
-        commonMap.putAll(cloneFormaterToNewKey(teamFormatter(losingTeam), "team", "loser-team"));
-        commonMap.putAll(cloneFormaterToNewKey(teamFormatter(losingTeam), "team", "game-loser-team"));
+        if (winningTeam != null && losingTeam != null) {
+            commonMap.putAll(cloneFormaterToNewKey(teamFormatter(winningTeam), "team", "winner-team"));
+            commonMap.putAll(cloneFormaterToNewKey(teamFormatter(winningTeam), "team", "game-winner-team"));
+            commonMap.putAll(cloneFormaterToNewKey(teamFormatter(losingTeam), "team", "loser-team"));
+            commonMap.putAll(cloneFormaterToNewKey(teamFormatter(losingTeam), "team", "game-loser-team"));
+        }
 
         return commonMap;
     }

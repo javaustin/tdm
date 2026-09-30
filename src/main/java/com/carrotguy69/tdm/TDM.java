@@ -23,8 +23,6 @@ import com.carrotguy69.tdm.utils.Logger;
 import com.carrotguy69.tdm.utils.Startup;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.apache.commons.logging.Log;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,14 +31,13 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Explosive;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.PufferFish;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -279,8 +276,8 @@ public final class TDM extends JavaPlugin implements Listener {
             return;
         }
 
-        if (cause == EntityDamageEvent.DamageCause.FALL && game.jumpPackNoFallDamagePlayers.contains(p.getUniqueId())) {
-            game.jumpPackNoFallDamagePlayers.remove(p.getUniqueId());
+        if (cause == EntityDamageEvent.DamageCause.FALL && game.noFallDamagePlayers.contains(p.getUniqueId())) {
+            game.noFallDamagePlayers.remove(p.getUniqueId());
             e.setCancelled(true);
             return;
         }
@@ -351,6 +348,10 @@ public final class TDM extends JavaPlugin implements Listener {
 
         else if (attackerGP.getTeam().equals(gp.getTeam())) {
             e.setCancelled(true);
+        }
+
+        if (attackerEntity instanceof PufferFish) {
+            e.setCancelled(false);
         }
 
         else {

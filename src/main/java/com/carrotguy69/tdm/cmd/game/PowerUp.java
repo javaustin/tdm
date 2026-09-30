@@ -3,6 +3,7 @@ package com.carrotguy69.tdm.cmd.game;
 import com.carrotguy69.cxyz.messages.MessageUtils;
 import com.carrotguy69.tdm.game.Game;
 import com.carrotguy69.tdm.game.GamePlayer;
+import com.carrotguy69.tdm.game.GameState;
 import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
@@ -40,6 +41,11 @@ public class PowerUp implements CommandExecutor {
 
         if (game == null) {
             MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.ERROR_NOT_IN_GAME), Map.of());
+            return true;
+        }
+
+        if (game.getGameState() != GameState.ACTIVE) {
+            MessageUtils.sendParsedMessage(sender, MessageGrabber.grab(TDMMessageKey.INVALID_GAME_STATE), Map.of());
             return true;
         }
 

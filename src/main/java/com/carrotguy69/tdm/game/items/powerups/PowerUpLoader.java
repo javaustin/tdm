@@ -11,7 +11,6 @@ import com.carrotguy69.tdm.game.items.GenericItemRegistry;
 import com.carrotguy69.tdm.messages.MessageGrabber;
 import com.carrotguy69.tdm.messages.TDMMessageKey;
 import com.carrotguy69.tdm.messages.utils.MapFormatters;
-import com.carrotguy69.tdm.utils.Logger;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -23,6 +22,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -35,13 +35,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
+import static com.carrotguy69.cxyz.CXYZ.thisPort;
 
 public class PowerUpLoader {
 
@@ -173,7 +173,7 @@ public class PowerUpLoader {
             p.setAllowFlight(false);
             p.setFlying(false);
 
-            game.jumpPackNoFallDamagePlayers.add(p.getUniqueId());
+            game.noFallDamagePlayers.add(p.getUniqueId());
 
         }));
 
@@ -186,10 +186,10 @@ public class PowerUpLoader {
             if (game == null)
                 return;
 
-            if (p.isOnGround() && game.jumpPackNoFallDamagePlayers.contains(p.getUniqueId())) {
+            if (p.isOnGround() && game.noFallDamagePlayers.contains(p.getUniqueId())) {
                 new BukkitRunnable() {public void run() {
                         GenericItemRegistry.powerUpsByPlayer.remove(p.getUniqueId(), jumpPack);
-                        game.jumpPackNoFallDamagePlayers.remove(p.getUniqueId());
+                        game.noFallDamagePlayers.remove(p.getUniqueId());
                 }}.runTaskLater(TDM.plugin, 1);
             }
         }));
@@ -343,17 +343,56 @@ public class PowerUpLoader {
                 return;
             }
 
-            event.getHook().setVelocity(p.getLocation().getDirection().multiply(1.5));
-
-            Logger.log(event.getState().name());
+            if (game.grappleRodCooldownPlayers.contains(p.getUniqueId())) {
+                event.setCancelled(true);
+                return;
+            }
 
             if (event.getState() == PlayerFishEvent.State.REEL_IN || event.getState() == PlayerFishEvent.State.IN_GROUND) {
-                p.setVelocity(event.getHook().getLocation().toVector().subtract(p.getLocation().toVector()).normalize().multiply(3.0));
+                event.getHook().setVelocity(p.getLocation().getDirection().multiply(1.5));
+
+                p.setVelocity(event.getHook().getLocation().toVector().subtract(p.getLocation().toVector()).normalize().multiply(1.8));
 
                 p.playSound(p, Sound.ENTITY_BLAZE_SHOOT, 1.0f, 2.0f);
                 MessageUtils.sendActionBar(p, f("&dWhoosh!"));
+
+                game.noFallDamagePlayers.add(p.getUniqueId());
+                game.grappleRodCooldownPlayers.add(p.getUniqueId());
+
+                final int[] countdown = {10};
+                new BukkitRunnable() {public void run(){
+
+                    if (countdown[0] > 0) {
+                        MessageUtils.sendActionBar(p, f("&cYou can grapple again in %d seconds".formatted(countdown[0])));
+                        countdown[0]--;
+                    }
+
+                    else {
+                        MessageUtils.sendActionBar(p, f("&aYou can grapple again!"));
+                        game.grappleRodCooldownPlayers.remove(p.getUniqueId());
+                        this.cancel();
+                    }
+
+                }}.runTaskTimer(TDM.plugin, 0L, 20L);
             }
+
         });
+
+        grappleHook.on(PlayerMoveEvent.class, ((event, powerUp) -> {
+
+            Player p = event.getPlayer();
+
+            Game game = Game.getByPlayer(p);
+
+            if (game == null)
+                return;
+
+            if (p.isOnGround()) {
+                new BukkitRunnable() {public void run() {
+                    game.noFallDamagePlayers.remove(p.getUniqueId());
+                }}.runTaskLater(TDM.plugin, 1);
+            }
+        }));
     }
 
     private static void loadTeamBuff() {
@@ -401,8 +440,11 @@ public class PowerUpLoader {
 
             Location center = e.getPotion().getLocation();
 
-            List<EntityType> types = List.of(EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH);
-            for (int i = 0; i < 500; i++) {
+            // We want pufferfish to be more rare (lazily and inefficiently)
+            List<EntityType> types = List.of(EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH);
+
+
+            for (int i = 0; i < 100; i++) {
 
                 EntityType type = types.get(new Random().nextInt(types.size()));
                 Class<? extends Entity> clazz = type.getEntityClass();
@@ -412,12 +454,12 @@ public class PowerUpLoader {
                 }
 
                 center.getWorld().spawn(center, clazz, fish -> {
+                    fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "%sFishhhh".formatted(p != null ? p.getName() + "'s " : "")));
                     fish.setInvulnerable(true);
-                    fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "Fishhhh"));
 
                     new BukkitRunnable() {public void run() {
                         fish.remove();
-                    }}.runTaskLater(TDM.plugin, new Random().nextInt(7) * 20L);
+                    }}.runTaskLater(TDM.plugin, new Random().nextInt(100, 200));
                 });
             }
 

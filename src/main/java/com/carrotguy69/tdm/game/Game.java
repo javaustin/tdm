@@ -95,6 +95,9 @@ public class Game {
 
     public int killsToWin;
 
+    public GameTeam winnerTeam;
+    public GameTeam loserTeam;
+
     // Runtime specific variables
     public boolean invulEnabled = true;
     private final Map<GamePlayer, DamageSource> playerLastDamageSourceMap = new Hashtable<>();
@@ -111,7 +114,8 @@ public class Game {
 
     public String defaultKit;
 
-    public List<UUID> jumpPackNoFallDamagePlayers = new ArrayList<>();
+    public List<UUID> noFallDamagePlayers = new ArrayList<>();
+    public List<UUID> grappleRodCooldownPlayers = new ArrayList<>();
 
     public Game(String id, GameMap map, NumberRange gameCapacity, String defaultKit) {
 
@@ -416,7 +420,7 @@ public class Game {
         }
 
         GenericItemRegistry.powerUpsByPlayer.removeAll(gp.getUUID());
-        jumpPackNoFallDamagePlayers.clear();
+        noFallDamagePlayers.clear();
     }
 
     public List<GamePlayer> getPlayers() {
@@ -1499,6 +1503,10 @@ public class Game {
     }
 
     public void win(GameTeam winningTeam) {
+
+        this.winnerTeam = winningTeam;
+        this.loserTeam = teams.stream().filter(gt -> gt != winningTeam).findAny().orElseThrow();
+
         gameState = GameState.ENDING;
         cancelAllTasks();
 
