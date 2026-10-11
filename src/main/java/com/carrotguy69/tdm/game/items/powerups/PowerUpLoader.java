@@ -441,7 +441,7 @@ public class PowerUpLoader {
             Location center = e.getPotion().getLocation();
 
             // We want pufferfish to be more rare (lazily and inefficiently)
-            List<EntityType> types = List.of(EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH);
+            List<EntityType> types = List.of(EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH,EntityType.TROPICAL_FISH, EntityType.TROPICAL_FISH, EntityType.TROPICAL_FISH);
 
 
             for (int i = 0; i < 100; i++) {
@@ -453,14 +453,18 @@ public class PowerUpLoader {
                     throw new RuntimeException(String.format("Failed to spawn a fish (could not get class from EntityType %s)", type));
                 }
 
-                center.getWorld().spawn(center, clazz, fish -> {
-                    fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "%sFishhhh".formatted(p != null ? p.getName() + "'s " : "")));
-                    fish.setInvulnerable(true);
+                new BukkitRunnable() { public void run() {
+                    center.getWorld().spawn(center.clone().add(new Random().nextInt(3), new Random().nextInt(3), new Random().nextInt(3)), clazz, fish -> {
+                        fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "%sFishhhh".formatted(p != null ? p.getName() + "'s " : "")));
+                        fish.setInvulnerable(true);
 
-                    new BukkitRunnable() {public void run() {
-                        fish.remove();
-                    }}.runTaskLater(TDM.plugin, new Random().nextInt(100, 200));
-                });
+                        new BukkitRunnable() {
+                            public void run() {
+                                fish.remove();
+                            }
+                        }.runTaskLater(TDM.plugin, new Random().nextInt(100, 200));
+                    });
+                }}.runTaskLater(TDM.plugin, new Random().nextInt(0, 20));
             }
 
         });
