@@ -91,8 +91,8 @@ public class PowerUp extends CustomItem {
 
     public void applyTo(GamePlayer gp) {
 
-        this.getPickupAction().accept(gp);
         GenericItemRegistry.powerUpsByPlayer.put(gp.getUUID(), this);
+        this.getPickupAction().accept(gp);
     }
 
     @SuppressWarnings("unchecked")

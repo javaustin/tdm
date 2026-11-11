@@ -36,10 +36,10 @@ game:
     enabled: true
 
     # How long should a PowerUp stay spawned before being removed or replaced? (1 second = 20 ticks)
-    despawn-ticks: 1200
+    despawn-ticks: 4200
 
     # What should be the maximum amount of PowerUp(s) on the map at once?
-    max: 5
+    max: 2
 
   click-actions:
     # Execute commands upon right or left-clicking with an item in the hand.

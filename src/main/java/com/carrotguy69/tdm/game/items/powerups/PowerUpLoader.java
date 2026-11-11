@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.carrotguy69.cxyz.CXYZ.f;
-import static com.carrotguy69.cxyz.CXYZ.thisPort;
 
 public class PowerUpLoader {
 
@@ -390,7 +389,7 @@ public class PowerUpLoader {
             if (p.isOnGround()) {
                 new BukkitRunnable() {public void run() {
                     game.noFallDamagePlayers.remove(p.getUniqueId());
-                }}.runTaskLater(TDM.plugin, 1);
+                }}.runTaskLater(TDM.plugin, 5);
             }
         }));
     }
@@ -417,6 +416,8 @@ public class PowerUpLoader {
                 MessageUtils.sendParsedMessage(p, "{player-team-color}{player} picked up %s!".formatted(teamBuff.getCustomName()), MapFormatters.gamePlayerFormatter(gp));
             }
             BroadcastUtils.playSound(players, Sound.ENTITY_PLAYER_BURP, 1, 1.5f);
+
+            GenericItemRegistry.powerUpsByPlayer.remove(gp.getUUID(), teamBuff);
         });
     }
 
@@ -455,7 +456,7 @@ public class PowerUpLoader {
 
                 new BukkitRunnable() { public void run() {
                     center.getWorld().spawn(center.clone().add(new Random().nextInt(3), new Random().nextInt(3), new Random().nextInt(3)), clazz, fish -> {
-                        fish.setCustomName(f(new ArrayList<>(ChatColor.reverseMap.keySet()).get(new Random().nextInt(ChatColor.reverseMap.size())) + "%sFishhhh".formatted(p != null ? p.getName() + "'s " : "")));
+                        fish.setCustomName(f(new ArrayList<>(ChatColor.getReverseMap().keySet()).get(new Random().nextInt(ChatColor.getReverseMap().size())) + "%sFishhhh".formatted(p != null ? p.getName() + "'s " : "")));
                         fish.setInvulnerable(true);
 
                         new BukkitRunnable() {
